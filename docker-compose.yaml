@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:18.1-alpine3.23
+    container_name: authuser_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=authuser_db
+    volumes:
+      - ead_platform:/var/lib/postgresql/data
+
+volumes:
+  ead_platform:
