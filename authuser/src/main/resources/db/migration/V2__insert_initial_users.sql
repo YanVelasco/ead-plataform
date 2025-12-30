@@ -1,0 +1,26 @@
+-- Insert initial users
+INSERT INTO TB_USERS (user_id, username, email, password, full_name, user_status, user_type, phone_number, image_url,
+                      creation_date, last_update_date)
+VALUES ('f47ac10b-58cc-4372-a567-0e02b2c3d479',
+        'admin',
+        'admin@ead.com',
+        '123456',
+        'Administrador',
+        'ACTIVE',
+        'ADMIN',
+        '+55 11 9999-9999',
+        'https://example.com/admin.jpg',
+        NOW(),
+        NOW()),
+       ('a47ac10b-58cc-4372-a567-0e02b2c3d480',
+        'instructor',
+        'instructor@ead.com',
+        '123456',
+        'Instrutor Principal',
+        'ACTIVE',
+        'INSTRUCTOR',
+        '+55 11 9999-8888',
+        'https://example.com/instructor.jpg',
+        NOW(),
+        NOW());
+
