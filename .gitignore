@@ -1,94 +1,81 @@
-# IDE - IntelliJ IDEA
-.idea/
-*.iml
-*.iws
-*.ipr
-out/
-.vscode/
-*.swp
-*.swo
-*~
-.DS_Store
-
 # Maven
 target/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
-pom.xml.next
+pom.xml.bak
 release.properties
 dependency-reduced-pom.xml
-.m2/
-.flywaydb/
-.mvn/wrapper/maven-wrapper.properties
+.flattened-pom.xml
+*.jar
+*.war
+*.ear
 
-# Gradle
-build/
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
+bin/
 .gradle/
-gradle/
-gradle-app.setting
-gradlew
-gradlew.bat
 
-# Spring Boot
+# Build & Runtime
+out/
+build/
+logs/
 *.log
-spring-boot-devtools.properties
+.metadata/
+
+# Git
+.git/
+.gitignore
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Node (se necessário)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Java
+*.class
+*.ctxt
+.mtj.tmp/
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
 
 # Database
 *.db
 *.sqlite
 *.sqlite3
-*.h2.db
-
-# Environment Variables
-.env
-.env.local
-.env.*.local
-
-# OS
-.DS_Store
-Thumbs.db
-*.swp
-*.swo
-*~
-
-# Node (if using frontend dependencies)
-node_modules/
-npm-debug.log
-yarn-error.log
-package-lock.json
-yarn.lock
-
-# Build Output
-dist/
-bin/
-lib/
-*.war
-*.ear
-*.zip
-
-# Temporary Files
-*.tmp
-*.temp
-*.bak
-*.backup
-~*
-
-# Test Coverage
-coverage/
-.coverage
-htmlcov/
-
-# Docker
-.docker/
-docker-compose.override.yml
 
 # Misc
-.classpath
-.project
-.settings/
-.DS_Store
-local.properties
-*.jks
-*.keystore
+.cache/
+.gradle/
+.npm/
+.eslintcache
+coverage/
+reports/
 
