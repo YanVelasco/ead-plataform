@@ -1,5 +1,6 @@
 package com.ead.authuser.service.impl;
 
+import com.ead.authuser.exceptions.NotFoundException;
 import com.ead.authuser.model.UserModel;
 import com.ead.authuser.repository.UserRepository;
 import com.ead.authuser.service.UserService;
@@ -32,7 +33,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public UserModel findById(UUID userId) {
         return userRepository.findById(userId).orElseThrow(
-                () -> new RuntimeException("User not found")
+                () -> new NotFoundException("User not found")
         );
     }
 
@@ -41,7 +42,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteById(UUID userId) {
         userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found"));
         userRepository.deleteById(userId);
     }
 
@@ -50,10 +51,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserModel updateById(UUID userId, UserModel requestUserModel) {
         UserModel userModel = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
         if (requestUserModel.getFullName() != null &&
-            !requestUserModel.getFullName().equals(userModel.getFullName())) {
+                !requestUserModel.getFullName().equals(userModel.getFullName())) {
             userModel.setFullName(requestUserModel.getFullName());
             userModel.setLastUpdateDate(LocalDateTime.now());
         }
