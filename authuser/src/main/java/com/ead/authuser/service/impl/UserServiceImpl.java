@@ -27,12 +27,6 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll();
     }
 
-    /**
-     * Busca usuário por ID com cache Redis
-     * - Primeira chamada: consulta banco de dados e armazena em cache
-     * - Chamadas posteriores: retorna do cache (10 minutos)
-     * - Chave: users::userId (ex: users::f47ac10b-58cc-4372-a567-0e02b2c3d479)
-     */
     @Override
     @Cacheable(value = "users", key = "#userId")
     @Transactional(readOnly = true)
@@ -42,24 +36,15 @@ public class UserServiceImpl implements UserService {
         );
     }
 
-    /**
-     * Delete usuário e remove do cache
-     * - Remove entrada do cache após deletar do banco
-     */
     @Override
     @CacheEvict(value = "users", key = "#userId")
     @Transactional
     public void deleteById(UUID userId) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
         userRepository.deleteById(userId);
     }
 
-    /**
-     * Atualiza usuário e invalida o cache
-     * - Busca usuário do banco (pode vir do cache)
-     * - Atualiza apenas campos específicos
-     * - Remove do cache para forçar reload na próxima consulta
-     * - Registra data da última atualização
-     */
     @Override
     @CacheEvict(value = "users", key = "#userId")
     @Transactional
