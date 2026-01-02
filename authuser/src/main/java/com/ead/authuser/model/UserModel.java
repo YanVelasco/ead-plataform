@@ -29,7 +29,7 @@ public class UserModel implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Setter(lombok.AccessLevel.NONE)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_id")
     UUID userId;
 
