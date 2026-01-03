@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -58,7 +60,9 @@ public class UserModel implements Serializable {
     String phoneNumber;
 
     @Column(name = "image_url")
-    String imageUrl;
+    @JdbcTypeCode(SqlTypes.VARBINARY)
+    byte[] imageUrl;
+
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     @Column(name = "creation_date", nullable = false)

@@ -59,6 +59,7 @@ spring:
     redis:
       time-to-live: -1
 
+
 logging:
   level:
     root: WARN
