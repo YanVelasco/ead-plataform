@@ -1,9 +1,7 @@
 package com.ead.authuser.service;
 
 import com.ead.authuser.dtos.UserDto;
-import com.ead.authuser.dtos.ImageMetadataDto;
 import com.ead.authuser.model.UserModel;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -21,10 +19,4 @@ public interface UserService {
     UserModel registerUser(UserDto userDto);
 
     UserModel updateImage(UUID userId, MultipartFile imageFile);
-
-    String getImageAsBase64(UUID userId);
-
-    ImageMetadataDto getImageWithMetadata(UUID userId);
-
-    ResponseEntity<byte[]> getImageAsBytes(UUID userId);
 }

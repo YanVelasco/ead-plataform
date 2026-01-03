@@ -1,9 +1,8 @@
 package com.ead.authuser.controller;
 
-import com.ead.authuser.dtos.UserDto;
 import com.ead.authuser.model.UserModel;
+import com.ead.authuser.service.ImageService;
 import com.ead.authuser.service.UserService;
-import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,9 +16,11 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+    private final ImageService imageService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, ImageService imageService) {
         this.userService = userService;
+        this.imageService = imageService;
     }
 
     @GetMapping
@@ -35,27 +36,20 @@ public class UserController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<Object> deleteUserById(@PathVariable UUID userId) {
         userService.deleteById(userId);
-        return  ResponseEntity.status(HttpStatus.OK).body("User deleted successfully.");
+        return ResponseEntity.status(HttpStatus.OK).body("User deleted successfully.");
     }
 
     @PutMapping("/{userId}/image")
-    public ResponseEntity<Object> updateUserImage(@PathVariable UUID userId, @RequestParam("file") MultipartFile imageFile) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.updateImage(userId, imageFile));
+    public ResponseEntity<UserModel> updateUserImage(
+            @PathVariable UUID userId,
+            @RequestParam("file") MultipartFile imageFile) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.updateImage(userId, imageFile));
     }
 
     @GetMapping("/{userId}/image")
-    public ResponseEntity<Object> getUserImage(@PathVariable UUID userId) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getImageAsBase64(userId));
-    }
-
-    @GetMapping("/{userId}/image/metadata")
-    public ResponseEntity<Object> getUserImageWithMetadata(@PathVariable UUID userId) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getImageWithMetadata(userId));
-    }
-
-    @GetMapping("/{userId}/image/view")
-    public ResponseEntity<byte[]> viewUserImage(@PathVariable UUID userId) {
-        return userService.getImageAsBytes(userId);
+    public ResponseEntity<byte[]> getUserImage(@PathVariable UUID userId) {
+        return imageService.getImageAsBytes(userId);
     }
 
 }

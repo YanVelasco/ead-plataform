@@ -14,9 +14,7 @@ public record UserDto(
         @JsonView({UserView.RegistrationPost.class, UserView.UserPut.class})
         String fullName,
         @JsonView({UserView.RegistrationPost.class, UserView.UserPut.class})
-        String phoneNumber,
-        @JsonView(UserView.ImagePut.class)
-        String imageUrl
+        String phoneNumber
 ) {
     public interface UserView {
         interface RegistrationPost {
@@ -26,9 +24,6 @@ public record UserDto(
         }
 
         interface PasswordPut {
-        }
-
-        interface ImagePut {
         }
     }
 }
