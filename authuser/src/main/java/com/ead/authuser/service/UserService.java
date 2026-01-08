@@ -19,4 +19,6 @@ public interface UserService {
     UserModel registerUser(UserDto userDto);
 
     UserModel updateImage(UUID userId, MultipartFile imageFile);
+
+    void updatePassword(UserModel userModel, UserDto userDto);
 }

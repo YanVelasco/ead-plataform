@@ -1,8 +1,10 @@
 package com.ead.authuser.controller;
 
+import com.ead.authuser.dtos.UserDto;
 import com.ead.authuser.model.UserModel;
 import com.ead.authuser.service.ImageService;
 import com.ead.authuser.service.UserService;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +35,18 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findById(userId));
     }
 
+    @PutMapping("/{userId}")
+    public ResponseEntity<UserModel> updateUserById(
+            @PathVariable UUID userId,
+            @RequestBody @JsonView(UserDto.UserView.UserPut.class) UserDto userDto) {
+        getUserById(userId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.updateById(userId, userDto));
+    }
+
     @DeleteMapping("/{userId}")
     public ResponseEntity<Object> deleteUserById(@PathVariable UUID userId) {
+        getUserById(userId);
         userService.deleteById(userId);
         return ResponseEntity.status(HttpStatus.OK).body("User deleted successfully.");
     }
@@ -43,6 +55,7 @@ public class UserController {
     public ResponseEntity<UserModel> updateUserImage(
             @PathVariable UUID userId,
             @RequestParam("file") MultipartFile imageFile) {
+        getUserById(userId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(userService.updateImage(userId, imageFile));
     }
@@ -50,6 +63,15 @@ public class UserController {
     @GetMapping("/{userId}/image")
     public ResponseEntity<byte[]> getUserImage(@PathVariable UUID userId) {
         return imageService.getImageAsBytes(userId);
+    }
+
+    @PutMapping("/{userId}/password")
+    public ResponseEntity<Object> updateUserPassword(
+            @PathVariable UUID userId,
+            @RequestBody @JsonView(UserDto.UserView.PasswordPut.class) UserDto userDto) {
+        var usermodel  = userService.findById(userId);
+        userService.updatePassword(usermodel, userDto);
+        return ResponseEntity.status(HttpStatus.OK).body("Password updated successfully.");
     }
 
 }

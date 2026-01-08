@@ -5,6 +5,7 @@ import com.ead.authuser.enums.UserStatus;
 import com.ead.authuser.enums.UserType;
 import com.ead.authuser.exceptions.AlreadyExistsException;
 import com.ead.authuser.exceptions.NotFoundException;
+import com.ead.authuser.exceptions.SamePasswordException;
 import com.ead.authuser.model.UserModel;
 import com.ead.authuser.repository.UserRepository;
 import com.ead.authuser.service.ImageService;
@@ -52,8 +53,6 @@ public class UserServiceImpl implements UserService {
     @CacheEvict(value = "users", key = "#userId")
     @Transactional
     public void deleteById(UUID userId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
         userRepository.deleteById(userId);
     }
 
@@ -61,8 +60,7 @@ public class UserServiceImpl implements UserService {
     @CacheEvict(value = "users", key = "#userId")
     @Transactional
     public UserModel updateById(UUID userId, UserDto userDto) {
-        var userModel = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+        var userModel = new UserModel();
         if (userDto.fullName() != null) {
             userModel.setFullName(userDto.fullName());
         }
@@ -91,9 +89,7 @@ public class UserServiceImpl implements UserService {
     @CacheEvict(value = "users", key = "#userId")
     @Transactional
     public UserModel updateImage(UUID userId, MultipartFile imageFile) {
-        var userModel = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-
+        var userModel = new UserModel();
         try {
             byte[] compressedImage = imageService.processAndCompressImage(imageFile);
             userModel.setImageUrl(compressedImage);
@@ -102,6 +98,16 @@ public class UserServiceImpl implements UserService {
         } catch (IOException e) {
             throw new RuntimeException("Erro ao processar a imagem: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public void updatePassword(UserModel userModel, UserDto userDto) {
+        if (userDto.password().equals(userModel.getPassword())) {
+            throw new SamePasswordException("The new password cannot be the same as the old password");
+        }
+        userModel.setPassword(userDto.password());
+        userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+        userRepository.save(userModel);
     }
 
 
