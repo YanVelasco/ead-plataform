@@ -7,6 +7,7 @@ import com.ead.authuser.service.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,7 +39,7 @@ public class UserController {
     @PutMapping("/{userId}")
     public ResponseEntity<UserModel> updateUserById(
             @PathVariable UUID userId,
-            @RequestBody @JsonView(UserDto.UserView.UserPut.class) UserDto userDto) {
+            @RequestBody @JsonView(UserDto.UserView.UserPut.class) @Validated(UserDto.UserView.UserPut.class) UserDto userDto) {
         getUserById(userId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(userService.updateById(userId, userDto));
@@ -68,8 +69,8 @@ public class UserController {
     @PutMapping("/{userId}/password")
     public ResponseEntity<Object> updateUserPassword(
             @PathVariable UUID userId,
-            @RequestBody @JsonView(UserDto.UserView.PasswordPut.class) UserDto userDto) {
-        var usermodel  = userService.findById(userId);
+            @RequestBody @JsonView(UserDto.UserView.PasswordPut.class) @Validated(UserDto.UserView.PasswordPut.class) UserDto userDto) {
+        var usermodel = userService.findById(userId);
         userService.updatePassword(usermodel, userDto);
         return ResponseEntity.status(HttpStatus.OK).body("Password updated successfully.");
     }

@@ -20,8 +20,14 @@ public record ErrorResponse(
         this(status, error, message, path, LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME), null);
     }
 
+    public ErrorResponse(int value, String validationError, String message, Map<String, String> errors) {
+        this(value, validationError, message, null, LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                , errors);
+    }
+
 
     public static ErrorResponse of(int status, String error, String message, String path, Map<String, String> details) {
-        return new ErrorResponse(status, error, message, path, LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME), details);
+        return new ErrorResponse(status, error, message, path,
+                LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME), details);
     }
 }
