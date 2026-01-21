@@ -1,5 +1,6 @@
 package com.ead.authuser.dtos;
 
+import com.ead.authuser.validations.PasswordConstraint;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -19,11 +20,13 @@ public record UserDto(
         @JsonView(UserView.RegistrationPost.class)
         String email,
 
+        @PasswordConstraint(groups = {UserView.RegistrationPost.class, UserView.PasswordPut.class})
         @NotBlank(groups = {UserView.RegistrationPost.class, UserView.PasswordPut.class}, message = "Password cannot " +
                 "be blank")
         @JsonView({UserView.RegistrationPost.class, UserView.PasswordPut.class})
         String password,
 
+        @PasswordConstraint(groups = UserView.PasswordPut.class)
         @NotBlank(groups = UserView.PasswordPut.class, message = "Old password cannot be blank")
         @JsonView(UserView.PasswordPut.class)
         String oldPassword,
