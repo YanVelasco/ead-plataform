@@ -13,6 +13,8 @@ import com.ead.authuser.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -108,6 +110,11 @@ public class UserServiceImpl implements UserService {
         userModel.setPassword(userDto.password());
         userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
         userRepository.save(userModel);
+    }
+
+    @Override
+    public Page<UserModel> findAll(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
 

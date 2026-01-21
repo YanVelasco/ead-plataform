@@ -1,17 +1,18 @@
 package com.ead.authuser.controller;
 
+import com.ead.authuser.dtos.PageDto;
 import com.ead.authuser.dtos.UserDto;
 import com.ead.authuser.model.UserModel;
 import com.ead.authuser.service.ImageService;
 import com.ead.authuser.service.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -27,8 +28,8 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserModel>> getUsers() {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.findAll());
+    public ResponseEntity<PageDto<UserModel>> getAllUsers(Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(PageDto.from(userService.findAll(pageable)));
     }
 
     @GetMapping("/{userId}")
