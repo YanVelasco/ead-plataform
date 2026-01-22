@@ -2,6 +2,7 @@ package com.ead.authuser.controller;
 
 import com.ead.authuser.dtos.PageDto;
 import com.ead.authuser.dtos.UserDto;
+import com.ead.authuser.dtos.UserFilterDto;
 import com.ead.authuser.model.UserModel;
 import com.ead.authuser.service.ImageService;
 import com.ead.authuser.service.UserService;
@@ -28,8 +29,11 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<PageDto<UserModel>> getAllUsers(Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(PageDto.from(userService.findAll(pageable)));
+    public ResponseEntity<PageDto<UserModel>> getAllUsers(
+            @ModelAttribute UserFilterDto filter,
+            Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(PageDto.from(userService.findAll(filter, pageable)));
     }
 
     @GetMapping("/{userId}")

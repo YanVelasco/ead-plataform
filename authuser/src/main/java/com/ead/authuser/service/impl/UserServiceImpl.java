@@ -1,6 +1,7 @@
 package com.ead.authuser.service.impl;
 
 import com.ead.authuser.dtos.UserDto;
+import com.ead.authuser.dtos.UserFilterDto;
 import com.ead.authuser.enums.UserStatus;
 import com.ead.authuser.enums.UserType;
 import com.ead.authuser.exceptions.AlreadyExistsException;
@@ -10,11 +11,13 @@ import com.ead.authuser.model.UserModel;
 import com.ead.authuser.repository.UserRepository;
 import com.ead.authuser.service.ImageService;
 import com.ead.authuser.service.UserService;
+import com.ead.authuser.specifications.UserSpecifications;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -113,9 +116,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserModel> findAll(Pageable pageable) {
-        return userRepository.findAll(pageable);
+    @Transactional(readOnly = true)
+    public Page<UserModel> findAll(UserFilterDto filter, Pageable pageable) {
+        Specification<UserModel> spec = UserSpecifications.withFilters(filter);
+        return userRepository.findAll(spec, pageable);
     }
-
 
 }

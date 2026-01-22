@@ -1,6 +1,7 @@
 package com.ead.authuser.service;
 
 import com.ead.authuser.dtos.UserDto;
+import com.ead.authuser.dtos.UserFilterDto;
 import com.ead.authuser.model.UserModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,5 +25,5 @@ public interface UserService {
 
     void updatePassword(UserModel userModel, UserDto userDto);
 
-    Page<UserModel> findAll(Pageable pageable);
+    Page<UserModel> findAll(UserFilterDto filter, Pageable pageable);
 }
