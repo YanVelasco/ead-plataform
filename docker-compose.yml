@@ -20,6 +20,26 @@ services:
       start_period: 10s
     restart: unless-stopped
 
+  mysql:
+    image: mysql:8.0
+    container_name: course_mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: course_db
+    volumes:
+      - course_mysql_data:/var/lib/mysql
+    networks:
+      - ead-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
   redis:
     image: redis:7-alpine
     container_name: ead_redis
@@ -40,6 +60,7 @@ services:
 volumes:
   ead_platform:
   redis_data:
+  course_mysql_data:
 
 networks:
   ead-network:
