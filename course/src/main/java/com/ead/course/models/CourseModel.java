@@ -4,6 +4,7 @@ import com.ead.course.enums.CourseLevel;
 import com.ead.course.enums.CourseStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import lombok.Setter;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -35,7 +37,7 @@ public class CourseModel implements Serializable {
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    @Column(name = "description", nullable = false, length = 255)
+    @Column(name = "description", nullable = false)
     private String description;
 
     @Column(name = "creation_date", nullable = false)
@@ -59,5 +61,10 @@ public class CourseModel implements Serializable {
 
     @Column(name = "image_url")
     private String imageUrl;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Column(name = "modules")
+    private Set<ModuleModel> moduleModels;
 
 }
