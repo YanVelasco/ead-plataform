@@ -55,8 +55,8 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "courses", key = "{#filter.name, #filter.courseStatus, #filter.courseLevel(), #filter" +
-            ".description(), #filter.userInstructor(), #pageable.pageNumber, #pageable.pageSize, #pageable.sort}")
+    @Cacheable(value = "courses", key = "{#filter.name, #filter.courseStatus, #filter.courseLevel, #filter" +
+            ".description, #filter.userInstructor, #pageable.pageNumber, #pageable.pageSize, #pageable.sort}")
     public Page<CourseModel> getAllCourses(CourseFilterDto filter, Pageable pageable) {
         Specification<CourseModel> spec = Specifications.courseFilters(filter);
         return courseRepository.findAll(spec, pageable);
