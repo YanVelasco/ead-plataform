@@ -1,10 +1,17 @@
 package com.ead.course.services.impl;
 
 import com.ead.course.dtos.CourseDto;
+import com.ead.course.dtos.CourseFilterDto;
 import com.ead.course.models.CourseModel;
 import com.ead.course.repositories.CourseRepository;
 import com.ead.course.services.CourseService;
+import com.ead.course.specifications.Specifications;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +31,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "courses", key = "#courseId")
     public void delete(UUID courseId) {
         Optional.of(courseRepository.deleteCourseById(courseId))
                 .filter(count -> count > 0)
@@ -31,6 +39,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    @Transactional
     public CourseModel save(CourseDto courseDto) {
         CourseModel courseModel = new CourseModel();
         BeanUtils.copyProperties(courseDto, courseModel);
@@ -44,5 +53,13 @@ public class CourseServiceImpl implements CourseService {
         return courseRepository.existsByName(courseName);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(value = "courses", key = "{#filter.name, #filter.courseStatus, #filter.courseLevel(), #filter" +
+            ".description(), #filter.userInstructor(), #pageable.pageNumber, #pageable.pageSize, #pageable.sort}")
+    public Page<CourseModel> getAllCourses(CourseFilterDto filter, Pageable pageable) {
+        Specification<CourseModel> spec = Specifications.courseFilters(filter);
+        return courseRepository.findAll(spec, pageable);
+    }
 
 }

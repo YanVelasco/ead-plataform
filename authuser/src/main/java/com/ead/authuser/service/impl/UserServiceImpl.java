@@ -117,6 +117,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "users", key = "{#filter.username, #filter.email, #filter.fullName, #filter.userStatus, " +
+            "#filter.userType, #pageable.pageNumber, #pageable.pageSize, #pageable.sort}")
     public Page<UserModel> findAll(UserFilterDto filter, Pageable pageable) {
         Specification<UserModel> spec = UserSpecifications.withFilters(filter);
         return userRepository.findAll(spec, pageable);
