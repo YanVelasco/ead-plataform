@@ -1,10 +1,7 @@
 package com.ead.course.exceptions.globalexception;
 
-import com.ead.authuser.exceptions.response.ErrorResponse;
-import com.ead.course.exceptions.AlreadyExistsException;
-import com.ead.course.exceptions.DatabaseException;
-import com.ead.course.exceptions.InvalidImageException;
-import com.ead.course.exceptions.SamePasswordException;
+import com.ead.course.exceptions.*;
+import com.ead.course.exceptions.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
