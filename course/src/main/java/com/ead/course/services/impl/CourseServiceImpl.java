@@ -34,10 +34,11 @@ public class CourseServiceImpl implements CourseService {
     @Override
     @Transactional
     @CacheEvict(value = "courses", key = "#courseId")
-    public void delete(UUID courseId) {
-        Optional.of(courseRepository.deleteCourseById(courseId))
-                .filter(count -> count > 0)
-                .orElseThrow(() -> new RuntimeException("Course not found with ID: " + courseId));
+    public String delete(UUID courseId) {
+        return courseRepository.findById(courseId).map(course -> {
+            courseRepository.delete(course);
+            return "Course with ID: " + courseId + " deleted successfully.";
+        }).orElseThrow(() -> new NotFoundException("Course not found with ID: " + courseId));
     }
 
     @Override

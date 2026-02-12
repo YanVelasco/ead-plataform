@@ -4,7 +4,6 @@ import com.ead.course.dtos.CourseDto;
 import com.ead.course.dtos.CourseFilterDto;
 import com.ead.course.dtos.PageDto;
 import com.ead.course.models.CourseModel;
-import com.ead.course.repositories.CourseRepository;
 import com.ead.course.services.CourseService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
@@ -20,8 +19,7 @@ public class CourseController {
 
     private final CourseService courseService;
 
-    public CourseController(CourseService courseService, CourseRepository courseRepository, CourseService courseService) {
-        this.courseService = courseService;
+    public CourseController(CourseService courseService) {
         this.courseService = courseService;
     }
 
@@ -30,7 +28,8 @@ public class CourseController {
             @RequestBody @Valid CourseDto courseDto
     ) {
         if (courseService.existsByName(courseDto.name())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Course with name '" + courseDto.name() + "' already exists.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Course with name '" + courseDto.name() + "' " +
+                    "already exists.");
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(courseService.save(courseDto));
     }
@@ -46,6 +45,12 @@ public class CourseController {
     @GetMapping("/{courseId}")
     public ResponseEntity<Object> getCourseById(@PathVariable UUID courseId) {
         return ResponseEntity.status(HttpStatus.OK).body(courseService.getById(courseId));
+    }
+
+    @DeleteMapping("{courseId}")
+    public ResponseEntity<Object> deleteCourse(@PathVariable UUID courseId) {
+        courseService.delete(courseId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
 
 }

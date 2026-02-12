@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface CourseService {
 
     @Transactional
-    void delete(UUID courseId);
+    String delete(UUID courseId);
 
     @Transactional
     CourseModel save(@Valid CourseDto courseDto);
