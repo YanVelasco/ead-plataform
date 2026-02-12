@@ -2,7 +2,9 @@ package com.ead.course.specifications;
 
 
 import com.ead.course.dtos.CourseFilterDto;
+import com.ead.course.dtos.ModuleFilterDto;
 import com.ead.course.models.CourseModel;
+import com.ead.course.models.ModuleModel;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -58,6 +60,36 @@ public class Specifications {
                         criteriaBuilder.like(
                                 criteriaBuilder.lower(root.get("userInstructor")),
                                 "%" + filter.userInstructor().toString().toLowerCase() + "%"
+                        )
+                );
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+    }
+
+    public static Specification<ModuleModel> moduleFilters(ModuleFilterDto filter) {
+        return (root, query, criteriaBuilder) -> {
+            if (filter == null) {
+                return criteriaBuilder.conjunction();
+            }
+
+            List<Predicate> predicates = new ArrayList<>();
+
+            if(filter.title() != null && !filter.title().isBlank()) {
+                predicates.add(
+                        criteriaBuilder.like(
+                                criteriaBuilder.lower(root.get("title")),
+                                "%" + filter.title().toLowerCase() + "%"
+                        )
+                );
+            }
+
+            if (filter.description() != null && !filter.description().isBlank()) {
+                predicates.add(
+                        criteriaBuilder.like(
+                                criteriaBuilder.lower(root.get("description")),
+                                "%" + filter.description().toLowerCase() + "%"
                         )
                 );
             }
