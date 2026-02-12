@@ -25,4 +25,6 @@ public interface CourseService {
 
     CourseModel getById(UUID courseId);
 
+    CourseModel updateById(UUID courseId, @Valid CourseDto courseDto);
+
 }

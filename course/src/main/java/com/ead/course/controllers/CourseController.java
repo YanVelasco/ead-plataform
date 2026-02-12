@@ -53,4 +53,9 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @PutMapping("/{courseId}")
+    public ResponseEntity<Object> updateCourse(@PathVariable UUID courseId, @RequestBody @Valid CourseDto courseDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(courseService.updateById(courseId, courseDto));
+    }
+
 }

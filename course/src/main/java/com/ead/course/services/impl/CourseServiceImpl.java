@@ -71,4 +71,13 @@ public class CourseServiceImpl implements CourseService {
                 " " + courseId));
     }
 
+    @Override
+    @Transactional
+    public CourseModel updateById(UUID courseId, CourseDto courseDto) {
+        var courseModel = getById(courseId);
+        BeanUtils.copyProperties(courseDto, courseModel, "id");
+        courseModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+        return courseRepository.save(courseModel);
+    }
+
 }
