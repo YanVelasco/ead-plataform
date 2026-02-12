@@ -50,7 +50,7 @@ public class CourseController {
     @DeleteMapping("{courseId}")
     public ResponseEntity<Object> deleteCourse(@PathVariable UUID courseId) {
         courseService.delete(courseId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }

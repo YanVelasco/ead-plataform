@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -34,11 +33,9 @@ public class CourseServiceImpl implements CourseService {
     @Override
     @Transactional
     @CacheEvict(value = "courses", key = "#courseId")
-    public String delete(UUID courseId) {
-        return courseRepository.findById(courseId).map(course -> {
-            courseRepository.delete(course);
-            return "Course with ID: " + courseId + " deleted successfully.";
-        }).orElseThrow(() -> new NotFoundException("Course not found with ID: " + courseId));
+    public void delete(UUID courseId) {
+        this.getById(courseId);
+        courseRepository.deleteById(courseId);
     }
 
     @Override
@@ -70,7 +67,8 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseModel getById(UUID courseId) {
-        return courseRepository.findById(courseId).orElseThrow(() -> new NotFoundException("Course not found with ID: " + courseId));
+        return courseRepository.findById(courseId).orElseThrow(() -> new NotFoundException("Course not found with ID:" +
+                " " + courseId));
     }
 
 }
