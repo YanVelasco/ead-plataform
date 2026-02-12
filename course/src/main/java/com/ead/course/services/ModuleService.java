@@ -22,4 +22,9 @@ public interface ModuleService {
     @Transactional(readOnly = true)
     Page<ModuleModel> getAllModulesByCourse(CourseModel course, ModuleFilterDto filter, Pageable pageable);
 
+    ModuleModel findById(CourseModel course, UUID moduleId);
+
+    @Transactional
+    ModuleModel updateModule(CourseModel course, UUID moduleId, @Valid ModuleDto moduleDto);
+
 }
