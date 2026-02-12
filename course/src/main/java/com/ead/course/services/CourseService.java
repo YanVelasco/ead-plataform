@@ -23,4 +23,6 @@ public interface CourseService {
     @Transactional(readOnly = true)
     Page<CourseModel> getAllCourses(CourseFilterDto filter, Pageable pageable);
 
+    CourseModel getById(UUID courseId);
+
 }

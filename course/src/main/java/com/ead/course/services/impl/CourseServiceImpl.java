@@ -2,6 +2,8 @@ package com.ead.course.services.impl;
 
 import com.ead.course.dtos.CourseDto;
 import com.ead.course.dtos.CourseFilterDto;
+import com.ead.course.exceptions.AlreadyExistsException;
+import com.ead.course.exceptions.NotFoundException;
 import com.ead.course.models.CourseModel;
 import com.ead.course.repositories.CourseRepository;
 import com.ead.course.services.CourseService;
@@ -50,7 +52,10 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public boolean existsByName(String courseName) {
-        return courseRepository.existsByName(courseName);
+        if (courseRepository.existsByName(courseName)) {
+            throw new AlreadyExistsException("Course with name '" + courseName + "' already exists.");
+        }
+        return false;
     }
 
     @Override
@@ -60,6 +65,11 @@ public class CourseServiceImpl implements CourseService {
     public Page<CourseModel> getAllCourses(CourseFilterDto filter, Pageable pageable) {
         Specification<CourseModel> spec = Specifications.courseFilters(filter);
         return courseRepository.findAll(spec, pageable);
+    }
+
+    @Override
+    public CourseModel getById(UUID courseId) {
+        return courseRepository.findById(courseId).orElseThrow(() -> new NotFoundException("Course not found with ID: " + courseId));
     }
 
 }
