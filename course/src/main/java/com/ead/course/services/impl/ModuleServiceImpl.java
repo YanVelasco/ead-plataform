@@ -10,11 +10,11 @@ import com.ead.course.specifications.Specifications;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -52,7 +52,8 @@ public class ModuleServiceImpl implements ModuleService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "modules", key = "{#course.courseId, #filter.title, #filter.description, #pageable.pageNumber, #pageable.pageSize, #pageable.sort}")
+    @Cacheable(value = "modules", key = "{#course.courseId, #filter.title, #filter.description, #pageable.pageNumber," +
+            " #pageable.pageSize, #pageable.sort}")
     public Page<ModuleModel> getAllModulesByCourse(CourseModel course, ModuleFilterDto filter, Pageable pageable) {
         Specification<ModuleModel> spec = Specifications.moduleFilters(filter)
                 .and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("course"), course));
