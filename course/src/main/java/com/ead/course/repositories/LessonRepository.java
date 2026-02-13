@@ -20,4 +20,13 @@ public interface LessonRepository extends JpaRepository<LessonModel, UUID>, JpaS
             """)
     int deleteLessonById(@Param("lessonId") UUID lessonId);
 
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    @Query("""
+                DELETE FROM LessonModel l
+                WHERE l.lessonId = :lessonId
+                  AND l.module.moduleId = :moduleId
+            """)
+    int deleteLessonByIdAndModuleId(@Param("lessonId") UUID lessonId, @Param("moduleId") UUID moduleId);
+
 }

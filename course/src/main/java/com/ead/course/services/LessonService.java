@@ -14,7 +14,7 @@ import java.util.UUID;
 public interface LessonService {
 
     @Transactional
-    void deleteById(UUID lessonId);
+    void deleteById(UUID moduleId, UUID lessonId);
 
     @Transactional
     LessonModel save(ModuleModel module, @Valid LessonDto lessonDto);

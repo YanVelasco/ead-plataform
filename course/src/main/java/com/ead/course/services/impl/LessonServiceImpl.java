@@ -32,10 +32,10 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public void deleteById(UUID lessonId) {
-        Optional.of(lessonRepository.deleteLessonById(lessonId))
+    public void deleteById(UUID moduleId, UUID lessonId) {
+        Optional.of(lessonRepository.deleteLessonByIdAndModuleId(lessonId, moduleId))
                 .filter(count -> count > 0)
-                .orElseThrow(() -> new RuntimeException("Lesson not found with ID: " + lessonId));
+                .orElseThrow(() -> new NotFoundException("Lesson not found with ID: " + lessonId +  " or lesson is not associated with the module with ID: " + moduleId));
     }
 
     @Override

@@ -48,9 +48,7 @@ public class LessonController {
 
     @DeleteMapping("/modules/{moduleId}/lessons/{lessonId}")
     public ResponseEntity<Object> deleteLesson(@PathVariable UUID moduleId, @PathVariable UUID lessonId){
-        moduleService.findById(moduleId);
-        getLessonById(moduleId, lessonId);
-        lessonService.deleteById(lessonId);
+        lessonService.deleteById(moduleId, lessonId);
         return ResponseEntity.noContent().build();
     }
 
