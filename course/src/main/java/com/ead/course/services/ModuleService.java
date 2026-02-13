@@ -27,4 +27,6 @@ public interface ModuleService {
     @Transactional
     ModuleModel updateModule(CourseModel course, UUID moduleId, @Valid ModuleDto moduleDto);
 
+    ModuleModel findById(UUID moduleId);
+
 }
