@@ -4,7 +4,6 @@ import com.ead.course.exceptions.*;
 import com.ead.course.exceptions.response.ErrorResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -58,8 +57,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ErrorResponse> handleNoHandlerFound(
-            NoHandlerFoundException ex,
-            WebRequest request) {
+            NoHandlerFoundException ex) {
 
         log.warn("Endpoint não encontrado: {} {}", ex.getHttpMethod(), ex.getRequestURL());
 
@@ -204,9 +202,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         Map<String, String> errors = new HashMap<>();
 
-        if (ex.getCause() instanceof InvalidFormatException){
-            InvalidFormatException ifx = (InvalidFormatException) ex.getCause();
-            if (ifx.getTargetType() != null && ifx.getTargetType().isEnum()){
+        if (ex.getCause() instanceof InvalidFormatException ifx) {
+            if (ifx.getTargetType() != null && ifx.getTargetType().isEnum()) {
                 String fieldName = ifx.getPath().getLast().getFieldName();
                 String errorMessage = ex.getMessage();
                 errors.put(fieldName, errorMessage);
