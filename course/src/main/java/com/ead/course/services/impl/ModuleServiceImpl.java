@@ -79,6 +79,8 @@ public class ModuleServiceImpl implements ModuleService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    @Cacheable(value = "modules", key = "#moduleId")
     public ModuleModel findById(UUID moduleId) {
         return moduleRepository.findById(moduleId).orElseThrow(() -> new RuntimeException("Module not found with ID: "
                 + moduleId));
