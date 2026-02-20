@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.UUID;
 
 public interface UserRepository extends JpaRepository<UserModel, UUID>, JpaSpecificationExecutor<UserModel> {
-    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM UserModel u WHERE u.username = :username OR u.email = :email")
+    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM UserModel u " +
+            "WHERE lower(u.username) = :username OR lower(u.email) = :email")
     boolean existsByUsernameOrEmail(@Param("username") String username, @Param("email") String email);
 }

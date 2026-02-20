@@ -88,13 +88,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserModel registerUser(UserDto userDto) {
-        log.info("Registering new user - username: {}, email: {}", userDto.username(), userDto.email());
-        if (userRepository.existsByUsernameOrEmail(userDto.username(), userDto.email())) {
-            log.warn("Username or email already exists {}, {}", userDto.username(), userDto.email());
+        String normalizedUsername = normalizeCredential(userDto.username());
+        String normalizedEmail = normalizeCredential(userDto.email());
+        log.info("Registering new user - username: {}, email: {}", normalizedUsername, normalizedEmail);
+        if (userRepository.existsByUsernameOrEmail(normalizedUsername, normalizedEmail)) {
+            log.warn("Username or email already exists {}, {}", normalizedUsername, normalizedEmail);
             throw new AlreadyExistsException("Username or email already exists");
         }
         var userModel = new UserModel();
         BeanUtils.copyProperties(userDto, userModel);
+        userModel.setUsername(normalizedUsername);
+        userModel.setEmail(normalizedEmail);
         userModel.setUserStatus(UserStatus.ACTIVE);
         userModel.setUserType(UserType.USER);
         userModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
@@ -146,6 +150,10 @@ public class UserServiceImpl implements UserService {
         log.info("Finding users with filters: {}, pageable: {}", filter, pageable);
         Specification<UserModel> spec = UserSpecifications.withFilters(filter);
         return userRepository.findAll(spec, pageable);
+    }
+
+    private static String normalizeCredential(String value) {
+        return value == null ? null : value.trim().toLowerCase();
     }
 
 }

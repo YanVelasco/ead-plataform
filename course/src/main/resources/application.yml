@@ -76,3 +76,4 @@ logging:
     org.flywaydb.core: INFO
     com.zaxxer.hikari: INFO
     redis.clients.jedis: INFO
+    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
