@@ -14,7 +14,6 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -25,7 +24,7 @@ public class GlobalExceptionHandler {
             NotFoundException ex,
             WebRequest request) {
 
-        log.error("Recurso não encontrado: {}", ex.getMessage());
+        log.error("Recurso não encontrado: {}", ex.getMessage(), ex);
 
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.NOT_FOUND.value(),
@@ -42,7 +41,7 @@ public class GlobalExceptionHandler {
             AlreadyExistsException ex,
             WebRequest request) {
 
-        log.error("Recurso já existe: {}", ex.getMessage());
+        log.error("Recurso já existe: {}", ex.getMessage(), ex);
 
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.CONFLICT.value(),
@@ -76,7 +75,7 @@ public class GlobalExceptionHandler {
             InvalidImageException ex,
             WebRequest request) {
 
-        log.error("Imagem inválida: {}", ex.getMessage());
+        log.error("Imagem inválida: {}", ex.getMessage(), ex);
 
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
@@ -93,7 +92,7 @@ public class GlobalExceptionHandler {
             ValidationException ex,
             WebRequest request) {
 
-        log.error("Erro de validação: {}", ex.getMessage());
+        log.error("Erro de validação: {}", ex.getMessage(), ex);
 
         ErrorResponse errorResponse = ErrorResponse.of(
                 HttpStatus.BAD_REQUEST.value(),
@@ -128,7 +127,7 @@ public class GlobalExceptionHandler {
             RuntimeException ex,
             WebRequest request) {
 
-        log.error("Erro em tempo de execução: {}", ex.getMessage());
+        log.error("Erro em tempo de execução: {}", ex.getMessage(), ex);
 
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
@@ -162,7 +161,7 @@ public class GlobalExceptionHandler {
             SamePasswordException ex,
             WebRequest request) {
 
-        log.error("Erro relacionado à senha: {}", ex.getMessage());
+        log.error("Erro relacionado à senha: {}", ex.getMessage(), ex);
 
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.CONFLICT.value(),
@@ -178,7 +177,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException ex) {
 
-        log.error("Erro de validação nos argumentos do método: {}", ex.getMessage());
+        log.error("Erro de validação nos argumentos do método: {}", ex.getMessage(), ex);
 
         Map<String, String> errors = new HashMap<>();
 

@@ -12,6 +12,7 @@ import com.ead.authuser.repository.UserRepository;
 import com.ead.authuser.service.ImageService;
 import com.ead.authuser.service.UserService;
 import com.ead.authuser.specifications.UserSpecifications;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -28,6 +29,7 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
+@Log4j2
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -42,6 +44,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public List<UserModel> findAll() {
+        log.info("Finding all users (no filters)");
         return userRepository.findAll();
     }
 
@@ -49,6 +52,7 @@ public class UserServiceImpl implements UserService {
     @Cacheable(value = "users", key = "#userId")
     @Transactional(readOnly = true)
     public UserModel findById(UUID userId) {
+        log.info("Finding user by id: {}", userId);
         return userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException("User not found")
         );
@@ -58,6 +62,7 @@ public class UserServiceImpl implements UserService {
     @CacheEvict(value = "users", key = "#userId")
     @Transactional
     public void deleteById(UUID userId) {
+        log.info("Deleting user by id: {}", userId);
         userRepository.deleteById(userId);
     }
 
@@ -65,20 +70,27 @@ public class UserServiceImpl implements UserService {
     @CacheEvict(value = "users", key = "#userId")
     @Transactional
     public UserModel updateById(UUID userId, UserDto userDto) {
+        log.info("Updating user by id: {}", userId);
         var userModel = new UserModel();
         if (userDto.fullName() != null) {
+            log.debug("Updating fullName for user {}", userId);
             userModel.setFullName(userDto.fullName());
         }
         if (userDto.phoneNumber() != null) {
+            log.debug("Updating phoneNumber for user {}", userId);
             userModel.setPhoneNumber(userDto.phoneNumber());
         }
         userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
-        return userRepository.save(userModel);
+        var savedUser = userRepository.save(userModel);
+        log.info("User updated successfully: {}", savedUser.getUserId());
+        return savedUser;
     }
 
     @Override
     public UserModel registerUser(UserDto userDto) {
+        log.info("Registering new user - username: {}, email: {}", userDto.username(), userDto.email());
         if (userRepository.existsByUsernameOrEmail(userDto.username(), userDto.email())) {
+            log.warn("Username or email already exists {}, {}", userDto.username(), userDto.email());
             throw new AlreadyExistsException("Username or email already exists");
         }
         var userModel = new UserModel();
@@ -87,32 +99,43 @@ public class UserServiceImpl implements UserService {
         userModel.setUserType(UserType.USER);
         userModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
         userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
-        return userRepository.save(userModel);
+
+        var savedUser = userRepository.save(userModel);
+        log.info("User registered successfully - id: {}", savedUser.getUserId());
+        return savedUser;
     }
 
     @Override
     @CacheEvict(value = "users", key = "#userId")
     @Transactional
     public UserModel updateImage(UUID userId, MultipartFile imageFile) {
+        log.info("Updating user image - userId: {}, filename: {}, contentType: {}, size: {}",
+                userId, imageFile.getOriginalFilename(), imageFile.getContentType(), imageFile.getSize());
         var userModel = new UserModel();
         try {
             byte[] compressedImage = imageService.processAndCompressImage(imageFile);
             userModel.setImageUrl(compressedImage);
             userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
-            return userRepository.save(userModel);
+            var savedUser = userRepository.save(userModel);
+            log.info("User image updated successfully - userId: {}", savedUser.getUserId());
+            return savedUser;
         } catch (IOException e) {
+            log.error("Error processing image for userId {}: {}", userId, e.getMessage());
             throw new RuntimeException("Erro ao processar a imagem: " + e.getMessage(), e);
         }
     }
 
     @Override
     public void updatePassword(UserModel userModel, UserDto userDto) {
+        log.info("Updating password for userId: {}", userModel.getUserId());
         if (userDto.password().equals(userModel.getPassword())) {
+            log.warn("New password matches old password for userId: {}", userModel.getUserId());
             throw new SamePasswordException("The new password cannot be the same as the old password");
         }
         userModel.setPassword(userDto.password());
         userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
         userRepository.save(userModel);
+        log.info("Password updated successfully for userId: {}", userModel.getUserId());
     }
 
     @Override
@@ -120,6 +143,7 @@ public class UserServiceImpl implements UserService {
     @Cacheable(value = "users", key = "{#filter.username, #filter.email, #filter.fullName, #filter.userStatus, " +
             "#filter.userType, #pageable.pageNumber, #pageable.pageSize, #pageable.sort}")
     public Page<UserModel> findAll(UserFilterDto filter, Pageable pageable) {
+        log.info("Finding users with filters: {}, pageable: {}", filter, pageable);
         Specification<UserModel> spec = UserSpecifications.withFilters(filter);
         return userRepository.findAll(spec, pageable);
     }
