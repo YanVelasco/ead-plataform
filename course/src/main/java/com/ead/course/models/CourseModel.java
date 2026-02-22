@@ -65,4 +65,7 @@ public class CourseModel implements Serializable {
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
     private Set<ModuleModel> moduleModels;
 
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    private Set<CourseUserModel> coursesUsersModel;
+
 }
