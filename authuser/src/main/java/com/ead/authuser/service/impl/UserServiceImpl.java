@@ -15,6 +15,7 @@ import com.ead.authuser.specifications.UserSpecifications;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -59,7 +60,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @CacheEvict(value = "users", key = "#userId")
+    @Caching(evict = {
+            @CacheEvict(value = "users", key = "#userId"),
+            @CacheEvict(value = "users-page", allEntries = true)
+    })
     @Transactional
     public void deleteById(UUID userId) {
         log.info("Deleting user by id: {}", userId);
@@ -67,7 +71,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @CacheEvict(value = "users", key = "#userId")
+    @Caching(evict = {
+            @CacheEvict(value = "users", key = "#userId"),
+            @CacheEvict(value = "users-page", allEntries = true)
+    })
     @Transactional
     public UserModel updateById(UUID userId, UserDto userDto) {
         log.info("Updating user by id: {}", userId);
@@ -87,6 +94,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CacheEvict(value = "users-page", allEntries = true)
     public UserModel registerUser(UserDto userDto) {
         String normalizedUsername = normalizeCredential(userDto.username());
         String normalizedEmail = normalizeCredential(userDto.email());
@@ -110,7 +118,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @CacheEvict(value = "users", key = "#userId")
+    @Caching(evict = {
+            @CacheEvict(value = "users", key = "#userId"),
+            @CacheEvict(value = "users-page", allEntries = true)
+    })
     @Transactional
     public UserModel updateImage(UUID userId, MultipartFile imageFile) {
         log.info("Updating user image - userId: {}, filename: {}, contentType: {}, size: {}",
@@ -130,6 +141,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CacheEvict(value = "users-page", allEntries = true)
     public void updatePassword(UserModel userModel, UserDto userDto) {
         log.info("Updating password for userId: {}", userModel.getUserId());
         if (userDto.password().equals(userModel.getPassword())) {
@@ -144,8 +156,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "users", key = "{#filter.username, #filter.email, #filter.fullName, #filter.userStatus, " +
-            "#filter.userType, #filter.courseId, #pageable.pageNumber, #pageable.pageSize, #pageable.sort}")
+    @Cacheable(
+            value = "users-page",
+            key = "{#filter.username, #filter.email, #filter.fullName, #filter.userStatus, " +
+                    "#filter.userType, #filter.courseId, #pageable.pageNumber, #pageable.pageSize, #pageable.sort}",
+            condition = "#filter == null || (#filter.username == null && #filter.email == null && " +
+                    "#filter.fullName == null && #filter.userStatus == null && #filter.userType == null && " +
+                    "#filter.courseId == null)"
+    )
     public Page<UserModel> findAll(UserFilterDto filter, Pageable pageable) {
         log.info("Finding users with filters: {}, pageable: {}", filter, pageable);
         Specification<UserModel> spec = UserSpecifications.withFilters(filter);
