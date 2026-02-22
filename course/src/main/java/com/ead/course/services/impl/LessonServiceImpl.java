@@ -61,8 +61,7 @@ public class LessonServiceImpl implements LessonService {
     public Page<LessonModel> getAllLessonsByModule(ModuleModel module, LessonFilter lessonFilter, Pageable pageable) {
         log.info("Finding lessons - moduleId: {}, filter: {}, pageable: {}", module.getModuleId(), lessonFilter,
                 pageable);
-        Specification<LessonModel> spec = Specifications.lessonFilters(lessonFilter)
-                .and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("module"), module));
+        Specification<LessonModel> spec = Specifications.lessonFilters(lessonFilter, module);
         return lessonRepository.findAll(spec, pageable);
     }
 

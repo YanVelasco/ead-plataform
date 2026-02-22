@@ -70,7 +70,7 @@ public class Specifications {
         };
     }
 
-    public static Specification<ModuleModel> moduleFilters(ModuleFilterDto filter) {
+    public static Specification<ModuleModel> moduleFilters(ModuleFilterDto filter,  CourseModel course) {
         return (root, query, criteriaBuilder) -> {
             if (filter == null) {
                 return criteriaBuilder.conjunction();
@@ -96,11 +96,17 @@ public class Specifications {
                 );
             }
 
+            if (course != null) {
+                predicates.add(
+                        criteriaBuilder.equal(root.get("course"), course)
+                );
+            }
+
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }
 
-    public static Specification<LessonModel> lessonFilters(LessonFilter filter) {
+    public static Specification<LessonModel> lessonFilters(LessonFilter filter, ModuleModel module) {
         return (root, query, criteriaBuilder) -> {
             if (filter == null) {
                 return criteriaBuilder.conjunction();
@@ -118,6 +124,10 @@ public class Specifications {
                         criteriaBuilder.lower(root.get("description")),
                         "%" + filter.description().toLowerCase() + "%"
                 );
+            }
+
+            if (module != null) {
+                return criteriaBuilder.equal(root.get("module"), module);
             }
 
             return criteriaBuilder.conjunction();

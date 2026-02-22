@@ -65,8 +65,7 @@ public class ModuleServiceImpl implements ModuleService {
             " #pageable.pageSize, #pageable.sort}")
     public Page<ModuleModel> getAllModulesByCourse(CourseModel course, ModuleFilterDto filter, Pageable pageable) {
         log.info("Finding modules - courseId: {}, filter: {}, pageable: {}", course.getCourseId(), filter, pageable);
-        Specification<ModuleModel> spec = Specifications.moduleFilters(filter)
-                .and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("course"), course));
+        Specification<ModuleModel> spec = Specifications.moduleFilters(filter, course);
         return moduleRepository.findAll(spec, pageable);
     }
 
