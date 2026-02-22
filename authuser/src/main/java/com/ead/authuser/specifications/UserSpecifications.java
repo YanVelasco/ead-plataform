@@ -3,6 +3,7 @@ package com.ead.authuser.specifications;
 import com.ead.authuser.dtos.UserFilterDto;
 import com.ead.authuser.model.UserModel;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
@@ -30,7 +31,8 @@ public class UserSpecifications {
             addEqualPredicate(predicates, criteriaBuilder, root, "userStatus", filter.userStatus());
             addLikePredicate(predicates, criteriaBuilder, root, "fullName", filter.fullName());
             addLikePredicate(predicates, criteriaBuilder, root, "email", filter.email());
-            addCoursePredicate(predicates, criteriaBuilder, root, filter.courseId());
+            assert query != null;
+            addCoursePredicate(predicates, criteriaBuilder, query, root, filter.courseId());
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
@@ -72,17 +74,18 @@ public class UserSpecifications {
     private static void addCoursePredicate(
             List<Predicate> predicates,
             CriteriaBuilder criteriaBuilder,
+            CriteriaQuery<?> query,
             Root<UserModel> root,
             UUID courseId
     ) {
         if (courseId == null) {
             return;
         }
-
+        query.distinct(true);
         predicates.add(
-                criteriaBuilder.isMember(
-                        courseId,
-                        root.join("userCourseModels").get("courseId")
+                criteriaBuilder.equal(
+                        root.join("userCourseModels").get("courseId"),
+                        courseId
                 )
         );
     }

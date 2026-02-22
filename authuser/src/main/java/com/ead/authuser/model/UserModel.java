@@ -73,6 +73,7 @@ public class UserModel implements Serializable {
     LocalDateTime lastUpdateDate;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<UserCourseModel> userCourseModels;
 
 }
