@@ -2,11 +2,14 @@ package com.ead.authuser.specifications;
 
 import com.ead.authuser.dtos.UserFilterDto;
 import com.ead.authuser.model.UserModel;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class UserSpecifications {
 
@@ -22,47 +25,66 @@ public class UserSpecifications {
 
             List<Predicate> predicates = new ArrayList<>();
 
-            if (filter.username() != null && !filter.username().isBlank()) {
-                predicates.add(
-                        criteriaBuilder.like(
-                                criteriaBuilder.lower(root.get("username")),
-                                "%" + filter.username().toLowerCase() + "%"
-                        )
-                );
-            }
-
-            if (filter.userType() != null) {
-                predicates.add(
-                        criteriaBuilder.equal(root.get("userType"), filter.userType())
-                );
-            }
-
-            if (filter.userStatus() != null) {
-                predicates.add(
-                        criteriaBuilder.equal(root.get("userStatus"), filter.userStatus())
-                );
-            }
-
-            if(filter.fullName() != null && !filter.fullName().isBlank()) {
-                predicates.add(
-                        criteriaBuilder.like(
-                                criteriaBuilder.lower(root.get("fullName")),
-                                "%" + filter.fullName().toLowerCase() + "%"
-                        )
-                );
-            }
-
-            if (filter.email() != null && !filter.email().isBlank()) {
-                predicates.add(
-                        criteriaBuilder.like(
-                                criteriaBuilder.lower(root.get("email")),
-                                "%" + filter.email().toLowerCase() + "%"
-                        )
-                );
-            }
+            addLikePredicate(predicates, criteriaBuilder, root, "username", filter.username());
+            addEqualPredicate(predicates, criteriaBuilder, root, "userType", filter.userType());
+            addEqualPredicate(predicates, criteriaBuilder, root, "userStatus", filter.userStatus());
+            addLikePredicate(predicates, criteriaBuilder, root, "fullName", filter.fullName());
+            addLikePredicate(predicates, criteriaBuilder, root, "email", filter.email());
+            addCoursePredicate(predicates, criteriaBuilder, root, filter.courseId());
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
+    }
+
+    private static void addLikePredicate(
+            List<Predicate> predicates,
+            CriteriaBuilder criteriaBuilder,
+            Root<UserModel> root,
+            String field,
+            String value
+    ) {
+        if (value == null || value.isBlank()) {
+            return;
+        }
+
+        predicates.add(
+                criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get(field)),
+                        "%" + value.toLowerCase() + "%"
+                )
+        );
+    }
+
+    private static void addEqualPredicate(
+            List<Predicate> predicates,
+            CriteriaBuilder criteriaBuilder,
+            Root<UserModel> root,
+            String field,
+            Object value
+    ) {
+        if (value == null) {
+            return;
+        }
+
+        predicates.add(criteriaBuilder.equal(root.get(field), value));
+    }
+
+    private static void addCoursePredicate(
+            List<Predicate> predicates,
+            CriteriaBuilder criteriaBuilder,
+            Root<UserModel> root,
+            UUID courseId
+    ) {
+        if (courseId == null) {
+            return;
+        }
+
+        predicates.add(
+                criteriaBuilder.isMember(
+                        courseId,
+                        root.join("userCourseModels").get("courseId")
+                )
+        );
     }
 
 }
