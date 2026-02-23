@@ -77,3 +77,8 @@ logging:
     com.zaxxer.hikari: INFO
     redis.clients.jedis: INFO
     org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
+
+ead:
+  api:
+    url:
+      course: http://localhost:8082/ead-course
