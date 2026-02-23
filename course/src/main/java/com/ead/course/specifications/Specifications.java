@@ -7,7 +7,7 @@ import com.ead.course.dtos.ModuleFilterDto;
 import com.ead.course.models.CourseModel;
 import com.ead.course.models.LessonModel;
 import com.ead.course.models.ModuleModel;
-import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
@@ -27,44 +27,11 @@ public class Specifications {
 
             List<Predicate> predicates = new ArrayList<>();
 
-            if (filter.name() != null && !filter.name().isBlank()) {
-                predicates.add(
-                        criteriaBuilder.like(
-                                criteriaBuilder.lower(root.get("name")),
-                                "%" + filter.name().toLowerCase() + "%"
-                        )
-                );
-            }
-
-            if (filter.description() != null) {
-                predicates.add(
-                        criteriaBuilder.like(
-                                criteriaBuilder.lower(root.get("description")),
-                                "%" + filter.description().toLowerCase() + "%"
-                        )
-                );
-            }
-
-            if (filter.courseStatus() != null) {
-                predicates.add(
-                        criteriaBuilder.equal(root.get("courseStatus"), filter.courseStatus())
-                );
-            }
-
-            if (filter.courseLevel() != null) {
-                predicates.add(
-                        criteriaBuilder.equal(root.get("courseLevel"), filter.courseLevel())
-                );
-            }
-
-            if (filter.userInstructor() != null) {
-                predicates.add(
-                        criteriaBuilder.like(
-                                criteriaBuilder.lower(root.get("userInstructor")),
-                                "%" + filter.userInstructor().toString().toLowerCase() + "%"
-                        )
-                );
-            }
+            addLikePredicate(predicates, criteriaBuilder, root.get("name"), filter.name());
+            addLikePredicate(predicates, criteriaBuilder, root.get("description"), filter.description());
+            addEqualPredicate(predicates, criteriaBuilder, root.get("courseStatus"), filter.courseStatus());
+            addEqualPredicate(predicates, criteriaBuilder, root.get("courseLevel"), filter.courseLevel());
+            addInstructorPredicate(predicates, criteriaBuilder, root, query, filter);
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
@@ -132,6 +99,52 @@ public class Specifications {
 
             return criteriaBuilder.conjunction();
         };
+    }
+
+    private static void addLikePredicate(List<Predicate> predicates,
+                                         CriteriaBuilder criteriaBuilder,
+                                         Expression<String> path,
+                                         String value) {
+        if (hasText(value)) {
+            predicates.add(
+                    criteriaBuilder.like(
+                            criteriaBuilder.lower(path),
+                            "%" + value.toLowerCase() + "%"
+                    )
+            );
+        }
+    }
+
+    private static void addEqualPredicate(List<Predicate> predicates,
+                                          CriteriaBuilder criteriaBuilder,
+                                          Expression<?> path,
+                                          Object value) {
+        if (value != null) {
+            predicates.add(criteriaBuilder.equal(path, value));
+        }
+    }
+
+    private static void addInstructorPredicate(List<Predicate> predicates,
+                                               CriteriaBuilder criteriaBuilder,
+                                               Root<CourseModel> root,
+                                               CriteriaQuery<?> query,
+                                               CourseFilterDto filter) {
+        if (filter.userInstructor() == null) {
+            return;
+        }
+        if (query != null) {
+            query.distinct(true);
+        }
+        predicates.add(
+                criteriaBuilder.equal(
+                        root.join("coursesUsersModel").get("userId"),
+                        filter.userInstructor()
+                )
+        );
+    }
+
+    private static boolean hasText(String value) {
+        return value != null && !value.isBlank();
     }
 
 }

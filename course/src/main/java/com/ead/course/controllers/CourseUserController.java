@@ -1,13 +1,14 @@
 package com.ead.course.controllers;
 
+import com.ead.course.services.CourseUserService;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class CourseUserController {
 
-    private final CourseUserController courseUserController;
+    private final CourseUserService courseUserService;
 
-    public CourseUserController(CourseUserController courseUserController) {
-        this.courseUserController = courseUserController;
+    public CourseUserController(CourseUserService courseUserService) {
+        this.courseUserService = courseUserService;
     }
 }

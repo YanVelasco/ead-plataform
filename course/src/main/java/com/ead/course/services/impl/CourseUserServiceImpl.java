@@ -1,15 +1,15 @@
 package com.ead.course.services.impl;
 
+import com.ead.course.repositories.CourseUserRepository;
 import com.ead.course.services.CourseUserService;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CourseUserServiceImpl implements CourseUserService {
 
-    private final CourseUserService courseUserService;
+    private final CourseUserRepository courseUserRepository;
 
-    public CourseUserServiceImpl(CourseUserService courseUserService) {
-        this.courseUserService = courseUserService;
+    public CourseUserServiceImpl(CourseUserRepository courseUserRepository) {
+        this.courseUserRepository = courseUserRepository;
     }
-
 }
