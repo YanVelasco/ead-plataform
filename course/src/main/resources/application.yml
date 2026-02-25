@@ -77,3 +77,8 @@ logging:
     com.zaxxer.hikari: INFO
     redis.clients.jedis: INFO
     org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
+
+ead:
+  api:
+    url:
+      authuser: http://localhost:8087/ead-authuser
