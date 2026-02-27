@@ -42,4 +42,22 @@ public class AuthUserClient {
 
     }
 
+    public UserDto getUserById(UUID userId) {
+
+        var url = baseUrlAuthUser + "/users/" + userId;
+
+        log.info("Requesting user by userId: {} - URL: {}", userId, url);
+
+        try{
+            return restClient.get()
+                    .uri(url)
+                    .retrieve()
+                    .body(UserDto.class);
+        }catch (Exception e){
+            log.error("Error requesting user by userId: {}", userId, e);
+            throw e;
+        }
+
+    }
+
 }
