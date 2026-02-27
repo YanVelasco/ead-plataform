@@ -7,7 +7,9 @@ import com.ead.course.models.CourseModel;
 import com.ead.course.models.CourseUserModel;
 import com.ead.course.repositories.CourseUserRepository;
 import com.ead.course.services.CourseUserService;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CourseUserServiceImpl implements CourseUserService {
@@ -21,6 +23,8 @@ public class CourseUserServiceImpl implements CourseUserService {
     }
 
     @Override
+    @Transactional
+    @CacheEvict(value = "courses-users-page", allEntries = true)
     public CourseUserModel saveSubscriptionUserInCourse(CourseModel course, SubscriptionDto subscriptionDto) {
         if (!courseUserRepository.existsByCourseAndUserId(course, subscriptionDto.userId())) {
             authUserClient.getUserById(subscriptionDto.userId());
