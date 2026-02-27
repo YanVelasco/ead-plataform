@@ -2,7 +2,9 @@ package com.ead.course.services.impl;
 
 import com.ead.course.clients.AuthUserClient;
 import com.ead.course.dtos.SubscriptionDto;
+import com.ead.course.enums.UserStatus;
 import com.ead.course.exceptions.SubscriptionAlreadyExistsException;
+import com.ead.course.exceptions.UserIsBlockedException;
 import com.ead.course.models.CourseModel;
 import com.ead.course.models.CourseUserModel;
 import com.ead.course.repositories.CourseUserRepository;
@@ -26,8 +28,14 @@ public class CourseUserServiceImpl implements CourseUserService {
     @Transactional
     @CacheEvict(value = "courses-users-page", allEntries = true)
     public CourseUserModel saveSubscriptionUserInCourse(CourseModel course, SubscriptionDto subscriptionDto) {
+
+        var userDto = authUserClient.getUserById(subscriptionDto.userId());
+
+        if (userDto.userStatus().equals(UserStatus.BLOCKED)) {
+            throw new UserIsBlockedException("User is blocked and cannot subscribe to courses.");
+        }
+
         if (!courseUserRepository.existsByCourseAndUserId(course, subscriptionDto.userId())) {
-            authUserClient.getUserById(subscriptionDto.userId());
             CourseUserModel courseUserModel = new CourseUserModel();
             courseUserModel.setCourse(course);
             courseUserModel.setUserId(subscriptionDto.userId());
@@ -35,5 +43,6 @@ public class CourseUserServiceImpl implements CourseUserService {
         } else {
             throw new SubscriptionAlreadyExistsException("User already subscribed to this course.");
         }
+
     }
 }

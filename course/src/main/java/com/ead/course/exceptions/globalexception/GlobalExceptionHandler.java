@@ -292,4 +292,20 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(UserIsBlockedException.class)
+    public ResponseEntity<ErrorResponse> handleUserIsBlockedException(
+            UserIsBlockedException ex,
+            WebRequest request) {
+        log.error("Erro de usuário bloqueado: {}", ex.getMessage());
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.FORBIDDEN.value(),
+                "USER_IS_BLOCKED",
+                ex.getMessage(),
+                request.getDescription(false).replace("uri=", "")
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
 }
