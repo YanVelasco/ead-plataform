@@ -64,6 +64,8 @@ logging:
   level:
     root: WARN
     com.ead: INFO
+    com.ead.course.clients: WARN
+    com.ead.course.exceptions.globalexception: INFO
     org.springframework.boot: INFO
     org.springframework.boot.actuate: WARN
     org.springframework.boot.autoconfigure: INFO
@@ -71,6 +73,7 @@ logging:
     org.springframework.data.repository.config: INFO
     org.springframework.web: WARN
     org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: INFO
+    org.springframework.web.client: WARN
     org.hibernate.dialect: INFO
     org.hibernate.engine.transaction.internal.TransactionImpl: INFO
     org.flywaydb.core: INFO

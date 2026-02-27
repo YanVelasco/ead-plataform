@@ -36,7 +36,7 @@ public class AuthUserClient {
                     .retrieve()
                     .body(new ParameterizedTypeReference<>() {});
         }catch (Exception e){
-            log.error("Error requesting users for courseId: {}", courseId, e);
+            log.debug("Error requesting users for courseId: {} - Details: {}", courseId, e.getMessage());
             throw e;
         }
 
@@ -54,7 +54,7 @@ public class AuthUserClient {
                     .retrieve()
                     .body(UserDto.class);
         }catch (Exception e){
-            log.error("Error requesting user by userId: {}", userId, e);
+            log.debug("Error requesting user by userId: {} - Details: {}", userId, e.getMessage());
             throw e;
         }
 
