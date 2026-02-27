@@ -220,4 +220,20 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(SubscriptionAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleSubscriptionAlreadyExistsException(
+            SubscriptionAlreadyExistsException ex,
+            WebRequest request) {
+        log.error("Erro de assinatura: {}", ex.getMessage());
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                "SUBSCRIPTION_ALREADY_EXISTS",
+                ex.getMessage(),
+                request.getDescription(false).replace("uri=", "")
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
 }
