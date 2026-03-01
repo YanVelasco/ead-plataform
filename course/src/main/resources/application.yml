@@ -64,7 +64,6 @@ logging:
   level:
     root: WARN
     com.ead: INFO
-    com.ead.course.clients: WARN
     com.ead.course.exceptions.globalexception: INFO
     org.springframework.boot: INFO
     org.springframework.boot.actuate: WARN

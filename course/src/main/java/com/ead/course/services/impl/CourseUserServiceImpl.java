@@ -39,7 +39,12 @@ public class CourseUserServiceImpl implements CourseUserService {
             CourseUserModel courseUserModel = new CourseUserModel();
             courseUserModel.setCourse(course);
             courseUserModel.setUserId(subscriptionDto.userId());
-            return courseUserRepository.save(courseUserModel);
+            var courseUser = courseUserRepository.save(courseUserModel);
+
+            authUserClient.saveUserSubscriptionInAuthUser(courseUserModel.getUserId(), courseUserModel.getCourse().getCourseId());
+
+            return courseUser;
+
         } else {
             throw new SubscriptionAlreadyExistsException("User already subscribed to this course.");
         }

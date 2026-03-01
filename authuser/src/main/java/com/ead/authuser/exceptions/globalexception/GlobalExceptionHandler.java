@@ -2,6 +2,7 @@ package com.ead.authuser.exceptions.globalexception;
 
 import com.ead.authuser.exceptions.*;
 import com.ead.authuser.exceptions.response.ErrorResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
@@ -195,6 +197,77 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(SubscriptionAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleSubscriptionAlreadyExistsException(
+            SubscriptionAlreadyExistsException ex,
+            WebRequest request) {
+        log.error("Erro de assinatura: {}", ex.getMessage());
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                "SUBSCRIPTION_ALREADY_EXISTS",
+                ex.getMessage(),
+                request.getDescription(false).replace("uri=", "")
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(HttpClientErrorException.class)
+    public ResponseEntity<ErrorResponse> handleHttpClientErrorException(
+            HttpClientErrorException ex,
+            WebRequest request) {
+
+        log.debug("Erro ao chamar serviço externo: {} - Status: {}", ex.getStatusCode(), ex.getStatusCode().value());
+
+        String message = "Erro ao processar requisição no serviço remoto";
+        String errorCode = "EXTERNAL_SERVICE_ERROR";
+
+        try {
+            String responseBody = ex.getResponseBodyAsString();
+            log.debug("Resposta do serviço remoto (raw): {}", responseBody);
+
+            if (!responseBody.isBlank()) {
+                ObjectMapper mapper = new ObjectMapper();
+                @SuppressWarnings("unchecked")
+                Map<String, Object> responseMap = mapper.readValue(responseBody, Map.class);
+
+                log.debug("Mapa da resposta parseado: {}", responseMap);
+
+                // Se a resposta remota contém uma mensagem, usar essa
+                if (responseMap.containsKey("message")) {
+                    Object messageObj = responseMap.get("message");
+                    message = messageObj != null ? String.valueOf(messageObj) : message;
+                    log.debug("Mensagem encontrada: {}", message);
+                }
+
+                // Se contém um erro, usar como código
+                if (responseMap.containsKey("error")) {
+                    Object errorObj = responseMap.get("error");
+                    errorCode = errorObj != null ? String.valueOf(errorObj) : errorCode;
+                    log.debug("Código de erro encontrado: {}", errorCode);
+                }
+            } else {
+                log.debug("Resposta do serviço remoto está vazia");
+            }
+        } catch (Exception e) {
+            // Se não conseguir parsear o JSON, usar mensagem padrão
+            log.warn("Não foi possível parsear resposta remota como JSON. Erro: {}", e.getMessage(), e);
+        }
+
+        log.info("Retornando erro para cliente - Status: {}, Código: {}, Mensagem: {}",
+                ex.getStatusCode().value(), errorCode, message);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                ex.getStatusCode().value(),
+                errorCode,
+                message,
+                request.getDescription(false).replace("uri=", "")
+        );
+
+        return new ResponseEntity<>(errorResponse, ex.getStatusCode());
     }
 
 }

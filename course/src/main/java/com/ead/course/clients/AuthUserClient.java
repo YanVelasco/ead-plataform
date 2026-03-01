@@ -1,5 +1,6 @@
 package com.ead.course.clients;
 
+import com.ead.course.dtos.CourseUserDto;
 import com.ead.course.dtos.PageDto;
 import com.ead.course.dtos.UserDto;
 import lombok.extern.log4j.Log4j2;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import java.util.UUID;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Log4j2
 @Component
@@ -55,6 +58,28 @@ public class AuthUserClient {
                     .body(UserDto.class);
         }catch (Exception e){
             log.debug("Error requesting user by userId: {} - Details: {}", userId, e.getMessage());
+            throw e;
+        }
+
+    }
+
+    public void saveUserSubscriptionInAuthUser(UUID userId, UUID courseId) {
+
+        var url = baseUrlAuthUser + "/users/" + userId + "/courses/subscription";
+
+        log.info("Saving user subscription in AuthUser for userId: {} and courseId: {} - URL: {}", userId, courseId, url);
+
+        var courseUser = new CourseUserDto(courseId, userId);
+
+        try{
+            restClient.post()
+                    .uri(url)
+                    .contentType(APPLICATION_JSON)
+                    .body(courseUser)
+                    .retrieve()
+                    .toBodilessEntity();
+        }catch (Exception e){
+            log.debug("Error saving user subscription in AuthUser for userId: {} and courseId: {} - Details: {}", userId, courseId, e.getMessage());
             throw e;
         }
 
