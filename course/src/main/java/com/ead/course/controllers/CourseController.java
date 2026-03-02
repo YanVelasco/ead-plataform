@@ -5,11 +5,13 @@ import com.ead.course.dtos.CourseFilterDto;
 import com.ead.course.dtos.PageDto;
 import com.ead.course.models.CourseModel;
 import com.ead.course.services.CourseService;
+import com.ead.course.validations.CourseValidator;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -20,20 +22,27 @@ import java.util.UUID;
 public class CourseController {
 
     private final CourseService courseService;
+    private final CourseValidator courseValidator;
 
-    public CourseController(CourseService courseService) {
+    public CourseController(CourseService courseService, CourseValidator courseValidator) {
         this.courseService = courseService;
+        this.courseValidator = courseValidator;
     }
 
     @PostMapping
     public ResponseEntity<Object> saveCourse(
-            @RequestBody @Valid CourseDto courseDto
+            @RequestBody CourseDto courseDto,
+            Errors errors
     ) {
         log.info("POST /courses - name: {}", courseDto.name());
-        if (courseService.existsByName(courseDto.name())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Course with name '" + courseDto.name() + "' " +
-                    "already exists.");
+
+        courseValidator.validate(courseDto, errors);
+
+        if (errors.hasErrors()) {
+            log.info("Validation failed for courseDto: {} - Errors: {}", courseDto, errors.getAllErrors());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.getAllErrors());
         }
+
         var savedCourse = courseService.save(courseDto);
         log.info("Course created - courseId: {}", savedCourse.getCourseId());
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCourse);

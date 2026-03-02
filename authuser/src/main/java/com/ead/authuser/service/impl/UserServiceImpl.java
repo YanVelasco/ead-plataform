@@ -14,9 +14,10 @@ import com.ead.authuser.service.UserService;
 import com.ead.authuser.specifications.UserSpecifications;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -36,10 +37,12 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final ImageService imageService;
+    private final CacheManager cacheManager;
 
-    public UserServiceImpl(UserRepository userRepository, ImageService imageService) {
+    public UserServiceImpl(UserRepository userRepository, ImageService imageService, CacheManager cacheManager) {
         this.userRepository = userRepository;
         this.imageService = imageService;
+        this.cacheManager = cacheManager;
     }
 
     @Override
@@ -169,13 +172,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserModel subscriptionInstructor(UserModel userModel) {
         log.info("Subscribing user as instructor - userId: {}", userModel.getUserId());
         userModel.setUserType(UserType.INSTRUCTOR);
         userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
         var savedUser = userRepository.save(userModel);
         log.info("User subscribed as instructor successfully - userId: {}", savedUser.getUserId());
+
+        clearUserCache(savedUser.getUserId());
+
         return savedUser;
+    }
+
+    private void clearUserCache(UUID userId) {
+        log.debug("Clearing cache for userId: {}", userId);
+        var usersCache = cacheManager.getCache("users");
+        if (usersCache != null) {
+            usersCache.evict(userId);
+            log.debug("Cache 'users' evicted for userId: {}", userId);
+        }
+
+        var usersPageCache = cacheManager.getCache("users-page");
+        if (usersPageCache != null) {
+            usersPageCache.clear();
+            log.debug("Cache 'users-page' cleared entirely");
+        }
     }
 
 }
