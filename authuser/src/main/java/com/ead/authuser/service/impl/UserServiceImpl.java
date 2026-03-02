@@ -96,17 +96,15 @@ public class UserServiceImpl implements UserService {
     @Override
     @CacheEvict(value = "users-page", allEntries = true)
     public UserModel registerUser(UserDto userDto) {
-        String normalizedUsername = normalizeCredential(userDto.username());
-        String normalizedEmail = normalizeCredential(userDto.email());
-        log.info("Registering new user - username: {}, email: {}", normalizedUsername, normalizedEmail);
-        if (userRepository.existsByUsernameOrEmail(normalizedUsername, normalizedEmail)) {
-            log.warn("Username or email already exists {}, {}", normalizedUsername, normalizedEmail);
+        log.info("Registering new user - username: {}, email: {}", userDto.username(), userDto.email());
+        if (userRepository.existsByUsernameOrEmail(userDto.username(), userDto.email())) {
+            log.warn("Username or email already exists {}, {}", userDto.username(), userDto.email());
             throw new AlreadyExistsException("Username or email already exists");
         }
         var userModel = new UserModel();
         BeanUtils.copyProperties(userDto, userModel);
-        userModel.setUsername(normalizedUsername);
-        userModel.setEmail(normalizedEmail);
+        userModel.setUsername(userDto.username().trim());
+        userModel.setEmail(userDto.email().trim());
         userModel.setUserStatus(UserStatus.ACTIVE);
         userModel.setUserType(UserType.USER);
         userModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
@@ -170,8 +168,14 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll(spec, pageable);
     }
 
-    private static String normalizeCredential(String value) {
-        return value == null ? null : value.trim().toLowerCase();
+    @Override
+    public UserModel subscriptionInstructor(UserModel userModel) {
+        log.info("Subscribing user as instructor - userId: {}", userModel.getUserId());
+        userModel.setUserType(UserType.INSTRUCTOR);
+        userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+        var savedUser = userRepository.save(userModel);
+        log.info("User subscribed as instructor successfully - userId: {}", savedUser.getUserId());
+        return savedUser;
     }
 
 }

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
+
     List<UserModel> findAll();
 
     UserModel findById(UUID userId);
@@ -26,4 +27,7 @@ public interface UserService {
     void updatePassword(UserModel userModel, UserDto userDto);
 
     Page<UserModel> findAll(UserFilterDto filter, Pageable pageable);
+
+    UserModel subscriptionInstructor(UserModel userModel);
+
 }
