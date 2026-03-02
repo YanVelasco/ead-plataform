@@ -30,4 +30,6 @@ public interface UserService {
 
     UserModel subscriptionInstructor(UserModel userModel);
 
+    boolean existsByUsernameOrEmail(String username, String email);
+
 }

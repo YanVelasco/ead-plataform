@@ -100,10 +100,7 @@ public class UserServiceImpl implements UserService {
     @CacheEvict(value = "users-page", allEntries = true)
     public UserModel registerUser(UserDto userDto) {
         log.info("Registering new user - username: {}, email: {}", userDto.username(), userDto.email());
-        if (userRepository.existsByUsernameOrEmail(userDto.username(), userDto.email())) {
-            log.warn("Username or email already exists {}, {}", userDto.username(), userDto.email());
-            throw new AlreadyExistsException("Username or email already exists");
-        }
+
         var userModel = new UserModel();
         BeanUtils.copyProperties(userDto, userModel);
         userModel.setUsername(userDto.username().trim());
@@ -183,6 +180,16 @@ public class UserServiceImpl implements UserService {
         clearUserCache(savedUser.getUserId());
 
         return savedUser;
+    }
+
+    @Override
+    public boolean existsByUsernameOrEmail(String username, String email) {
+        if (userRepository.existsByUsernameOrEmail(username, email)) {
+            log.warn("Username or email already exists {}, {}", username, email);
+            throw new AlreadyExistsException("Username or email already exists");
+        }
+
+        return false;
     }
 
     private void clearUserCache(UUID userId) {
