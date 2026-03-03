@@ -7,7 +7,6 @@ import com.ead.authuser.enums.UserType;
 import com.ead.authuser.exceptions.AlreadyExistsException;
 import com.ead.authuser.exceptions.NotFoundException;
 import com.ead.authuser.exceptions.SamePasswordException;
-import com.ead.authuser.model.UserCourseModel;
 import com.ead.authuser.model.UserModel;
 import com.ead.authuser.repository.UserCourseRepository;
 import com.ead.authuser.repository.UserRepository;
@@ -75,13 +74,7 @@ public class UserServiceImpl implements UserService {
     public void deleteById(UUID userId) {
         log.info("Deleting user by id: {}", userId);
 
-        List<UserCourseModel> userCourses = userCourseRepository.findAllByUser(userId);
-
-        if (!userCourses.isEmpty()) {
-            userCourseRepository.deleteAll(userCourses);
-            log.info("Deleted {} course associations for userId: {}", userCourses.size(), userId);
-        }
-
+        userCourseRepository.deleteAllUserCourseModelByUser_UserId(userId);
 
         userRepository.deleteById(userId);
     }

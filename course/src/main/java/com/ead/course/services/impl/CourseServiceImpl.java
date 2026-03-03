@@ -5,7 +5,6 @@ import com.ead.course.dtos.CourseFilterDto;
 import com.ead.course.exceptions.AlreadyExistsException;
 import com.ead.course.exceptions.NotFoundException;
 import com.ead.course.models.CourseModel;
-import com.ead.course.models.CourseUserModel;
 import com.ead.course.repositories.CourseRepository;
 import com.ead.course.repositories.CourseUserRepository;
 import com.ead.course.services.CourseService;
@@ -24,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -51,11 +49,7 @@ public class CourseServiceImpl implements CourseService {
         log.info("Deleting course - courseId: {}", courseId);
         courseService.getById(courseId);
 
-        List<CourseUserModel> courseUserModelList = courseUserRepository.findByCourseId(courseId);
-        if (!courseUserModelList.isEmpty()) {
-            courseUserRepository.deleteAll(courseUserModelList);
-            log.info("Deleted {} course-user associations for courseId: {}", courseUserModelList.size(), courseId);
-        }
+        courseUserRepository.deleteAllCourseUserByCourse_CourseId(courseId);
 
         courseRepository.deleteById(courseId);
         log.info("Course deleted successfully - courseId: {}", courseId);
