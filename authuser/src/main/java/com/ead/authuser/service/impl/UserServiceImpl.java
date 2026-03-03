@@ -7,7 +7,9 @@ import com.ead.authuser.enums.UserType;
 import com.ead.authuser.exceptions.AlreadyExistsException;
 import com.ead.authuser.exceptions.NotFoundException;
 import com.ead.authuser.exceptions.SamePasswordException;
+import com.ead.authuser.model.UserCourseModel;
 import com.ead.authuser.model.UserModel;
+import com.ead.authuser.repository.UserCourseRepository;
 import com.ead.authuser.repository.UserRepository;
 import com.ead.authuser.service.ImageService;
 import com.ead.authuser.service.UserService;
@@ -38,11 +40,13 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ImageService imageService;
     private final CacheManager cacheManager;
+    private final UserCourseRepository userCourseRepository;
 
-    public UserServiceImpl(UserRepository userRepository, ImageService imageService, CacheManager cacheManager) {
+    public UserServiceImpl(UserRepository userRepository, ImageService imageService, CacheManager cacheManager, UserCourseRepository userCourseRepository) {
         this.userRepository = userRepository;
         this.imageService = imageService;
         this.cacheManager = cacheManager;
+        this.userCourseRepository = userCourseRepository;
     }
 
     @Override
@@ -70,6 +74,15 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteById(UUID userId) {
         log.info("Deleting user by id: {}", userId);
+
+        List<UserCourseModel> userCourses = userCourseRepository.findAllByUser(userId);
+
+        if (!userCourses.isEmpty()) {
+            userCourseRepository.deleteAll(userCourses);
+            log.info("Deleted {} course associations for userId: {}", userCourses.size(), userId);
+        }
+
+
         userRepository.deleteById(userId);
     }
 
