@@ -7,6 +7,7 @@ import com.ead.authuser.model.UserModel;
 import com.ead.authuser.repository.UserCourseRepository;
 import com.ead.authuser.service.UserCourseService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -20,6 +21,7 @@ public class UserCourseServiceImpl implements UserCourseService {
     }
 
     @Override
+    @Transactional
     public UserCourseModel saveCourseInUser(UserModel user, UserCourseDto userCourseDto) {
 
         if (userCourseRepository.existsByCourseIdAndUser(userCourseDto.courseId(), user)) {
@@ -34,6 +36,7 @@ public class UserCourseServiceImpl implements UserCourseService {
     }
 
     @Override
+    @Transactional
     public void deleteCourseInUser(UUID courseId) {
         userCourseRepository.deleteAllUserCourseModelByCourseId(courseId);
     }

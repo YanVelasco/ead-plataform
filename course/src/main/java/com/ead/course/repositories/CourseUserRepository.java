@@ -11,4 +11,6 @@ public interface CourseUserRepository extends JpaRepository<CourseUserModel, UUI
     boolean existsByCourseAndUserId(CourseModel course, @NotNull(message = "userId cannot be null") UUID uuid);
 
     void deleteAllCourseUserByCourse_CourseId(UUID courseId);
+
+    boolean existsByCourse_CourseId(UUID courseId);
 }

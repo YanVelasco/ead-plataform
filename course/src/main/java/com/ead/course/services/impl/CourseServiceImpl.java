@@ -1,5 +1,6 @@
 package com.ead.course.services.impl;
 
+import com.ead.course.clients.AuthUserClient;
 import com.ead.course.dtos.CourseDto;
 import com.ead.course.dtos.CourseFilterDto;
 import com.ead.course.exceptions.AlreadyExistsException;
@@ -32,11 +33,13 @@ public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final CourseService courseService;
     private final CourseUserRepository courseUserRepository;
+    private final AuthUserClient authUserClient;
 
-    public CourseServiceImpl(CourseRepository courseRepository, @Lazy CourseService courseService, CourseUserRepository courseUserRepository) {
+    public CourseServiceImpl(CourseRepository courseRepository, @Lazy CourseService courseService, CourseUserRepository courseUserRepository, AuthUserClient authUserClient) {
         this.courseRepository = courseRepository;
         this.courseService = courseService;
         this.courseUserRepository = courseUserRepository;
+        this.authUserClient = authUserClient;
     }
 
     @Override
@@ -49,7 +52,9 @@ public class CourseServiceImpl implements CourseService {
         log.info("Deleting course - courseId: {}", courseId);
         courseService.getById(courseId);
 
-        courseUserRepository.deleteAllCourseUserByCourse_CourseId(courseId);
+        if (courseUserRepository.existsByCourse_CourseId(courseId)){
+            authUserClient.deleteUserSubscriptionInAuthUser(courseId);
+        }
 
         courseRepository.deleteById(courseId);
         log.info("Course deleted successfully - courseId: {}", courseId);

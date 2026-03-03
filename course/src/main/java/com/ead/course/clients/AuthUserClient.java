@@ -85,4 +85,22 @@ public class AuthUserClient {
 
     }
 
+        public void deleteUserSubscriptionInAuthUser(UUID courseId) {
+
+            var url = baseUrlAuthUser + "/users/courses/" + courseId;
+
+            log.info("Deleting user subscription in AuthUser for courseId: {} - URL: {}", courseId, url);
+
+            try{
+                restClient.delete()
+                        .uri(url)
+                        .retrieve()
+                        .toBodilessEntity();
+            }catch (Exception e){
+                log.debug("Error deleting user subscription in AuthUser for courseId: {} - Details: {}", courseId, e.getMessage());
+                throw e;
+            }
+
+        }
+
 }
