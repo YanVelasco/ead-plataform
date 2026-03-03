@@ -7,6 +7,7 @@ import com.ead.authuser.dtos.UserCourseDto;
 import com.ead.authuser.service.UserCourseService;
 import com.ead.authuser.service.UserService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+@Slf4j
 @RestController
 public class UserCourseController {
 
@@ -43,6 +45,15 @@ public class UserCourseController {
     ) {
         var user = userService.findById(userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(userCourseService.saveCourseInUser(user, userCourseDto));
+    }
+
+    @DeleteMapping("/users/courses/{courseId}")
+    public ResponseEntity<Object> deleteCourseInUser(
+            @PathVariable UUID courseId
+    ) {
+        log.info("deleteCourseInUser - courseId: {}", courseId);
+        userCourseService.deleteCourseInUser(courseId);
+        return ResponseEntity.status(HttpStatus.OK).body("Course deleted in user successfully");
     }
 
 }

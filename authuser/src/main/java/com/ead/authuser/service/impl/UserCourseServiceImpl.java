@@ -8,6 +8,8 @@ import com.ead.authuser.repository.UserCourseRepository;
 import com.ead.authuser.service.UserCourseService;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class UserCourseServiceImpl implements UserCourseService {
 
@@ -29,6 +31,11 @@ public class UserCourseServiceImpl implements UserCourseService {
         userCourseModel.setUser(user);
         return userCourseRepository.save(userCourseModel);
 
+    }
+
+    @Override
+    public void deleteCourseInUser(UUID courseId) {
+        userCourseRepository.deleteAllUserCourseModelByCourseId(courseId);
     }
 
 }

@@ -75,6 +75,7 @@ public class UserServiceImpl implements UserService {
         log.info("Deleting user by id: {}", userId);
 
         userCourseRepository.deleteAllUserCourseModelByUser_UserId(userId);
+        log.info("Deleted user-course associations for userId: {}", userId);
 
         userRepository.deleteById(userId);
     }
