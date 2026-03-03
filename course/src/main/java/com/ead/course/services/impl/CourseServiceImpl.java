@@ -5,7 +5,9 @@ import com.ead.course.dtos.CourseFilterDto;
 import com.ead.course.exceptions.AlreadyExistsException;
 import com.ead.course.exceptions.NotFoundException;
 import com.ead.course.models.CourseModel;
+import com.ead.course.models.CourseUserModel;
 import com.ead.course.repositories.CourseRepository;
+import com.ead.course.repositories.CourseUserRepository;
 import com.ead.course.services.CourseService;
 import com.ead.course.specifications.Specifications;
 import lombok.extern.slf4j.Slf4j;
@@ -13,15 +15,16 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -30,10 +33,12 @@ public class CourseServiceImpl implements CourseService {
 
     private final CourseRepository courseRepository;
     private final CourseService courseService;
+    private final CourseUserRepository courseUserRepository;
 
-    public CourseServiceImpl(CourseRepository courseRepository, @Lazy CourseService courseService) {
+    public CourseServiceImpl(CourseRepository courseRepository, @Lazy CourseService courseService, CourseUserRepository courseUserRepository) {
         this.courseRepository = courseRepository;
         this.courseService = courseService;
+        this.courseUserRepository = courseUserRepository;
     }
 
     @Override
@@ -45,6 +50,13 @@ public class CourseServiceImpl implements CourseService {
     public void delete(UUID courseId) {
         log.info("Deleting course - courseId: {}", courseId);
         courseService.getById(courseId);
+
+        List<CourseUserModel> courseUserModelList = courseUserRepository.findByCourseId(courseId);
+        if (!courseUserModelList.isEmpty()) {
+            courseUserRepository.deleteAll(courseUserModelList);
+            log.info("Deleted {} course-user associations for courseId: {}", courseUserModelList.size(), courseId);
+        }
+
         courseRepository.deleteById(courseId);
         log.info("Course deleted successfully - courseId: {}", courseId);
     }
