@@ -34,6 +34,7 @@ public class CourseUserController {
             @PathVariable UUID courseId,
             @PageableDefault(sort = "userId", direction = Sort.Direction.ASC) Pageable pageable
     ) {
+        courseService.getById(courseId);
         return ResponseEntity.ok(authUserClient.getAllUsersByCourse(courseId, pageable));
     }
 
