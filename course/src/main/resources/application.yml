@@ -5,7 +5,7 @@ server:
 
 spring:
   application:
-    name: course
+    name: ead-course
 
   datasource:
     url: jdbc:mysql://localhost:3306/course_db
@@ -84,3 +84,10 @@ ead:
   api:
     url:
       authuser: http://localhost:8087/ead-authuser
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
