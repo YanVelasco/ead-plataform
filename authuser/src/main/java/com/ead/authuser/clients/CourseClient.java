@@ -30,13 +30,31 @@ public class CourseClient {
 
         log.info("Requesting courses for userId: {} - URL: {}", userId, url);
 
-        try{
+        try {
             return restClient.get()
                     .uri(url)
                     .retrieve()
-                    .body(new ParameterizedTypeReference<PageDto<CourseDto>>() {});
-        }catch (Exception e){
+                    .body(new ParameterizedTypeReference<>() {
+                    });
+        } catch (Exception e) {
             log.error("Error requesting courses for userId: {}", userId, e);
+            throw e;
+        }
+    }
+
+    public void deleteUserCourseInCourse(UUID userId) {
+
+        var url = baseUrlCourse + "/courses/users/" + userId;
+
+        log.info("Requesting delete courses for userId: {} - URL: {}", userId, url);
+
+        try {
+            restClient.delete()
+                    .uri(url)
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (Exception e) {
+            log.error("Error requesting delete courses for userId: {}", userId, e);
             throw e;
         }
     }

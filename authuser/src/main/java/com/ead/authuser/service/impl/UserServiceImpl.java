@@ -1,5 +1,6 @@
 package com.ead.authuser.service.impl;
 
+import com.ead.authuser.clients.CourseClient;
 import com.ead.authuser.dtos.UserDto;
 import com.ead.authuser.dtos.UserFilterDto;
 import com.ead.authuser.enums.UserStatus;
@@ -40,12 +41,14 @@ public class UserServiceImpl implements UserService {
     private final ImageService imageService;
     private final CacheManager cacheManager;
     private final UserCourseRepository userCourseRepository;
+    private final CourseClient courseClient;
 
-    public UserServiceImpl(UserRepository userRepository, ImageService imageService, CacheManager cacheManager, UserCourseRepository userCourseRepository) {
+    public UserServiceImpl(UserRepository userRepository, ImageService imageService, CacheManager cacheManager, UserCourseRepository userCourseRepository, CourseClient courseClient) {
         this.userRepository = userRepository;
         this.imageService = imageService;
         this.cacheManager = cacheManager;
         this.userCourseRepository = userCourseRepository;
+        this.courseClient = courseClient;
     }
 
     @Override
@@ -78,6 +81,10 @@ public class UserServiceImpl implements UserService {
             log.debug("User-course associations found for userId: {}, deleting associations", userId);
             userCourseRepository.deleteAllUserCourseModelByUser_UserId(userId);
             log.debug("User-course associations deleted for userId: {}", userId);
+
+
+            courseClient.deleteUserCourseInCourse(userId);
+            log.debug("Requested course service to delete user-course associations for userId: {}", userId);
         }
 
 

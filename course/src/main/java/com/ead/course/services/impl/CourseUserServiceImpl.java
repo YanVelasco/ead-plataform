@@ -13,6 +13,8 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 public class CourseUserServiceImpl implements CourseUserService {
 
@@ -49,5 +51,13 @@ public class CourseUserServiceImpl implements CourseUserService {
             throw new SubscriptionAlreadyExistsException("User already subscribed to this course.");
         }
 
+    }
+
+    @Override
+    public void deleteCourseUserByUserId(UUID userId) {
+        var courseUsers = courseUserRepository.findAllByUserId(userId);
+        if (!courseUsers.isEmpty()) {
+            courseUserRepository.deleteAll(courseUsers);
+        }
     }
 }

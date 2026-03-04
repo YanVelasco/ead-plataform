@@ -5,12 +5,12 @@ import com.ead.course.models.CourseUserModel;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface CourseUserRepository extends JpaRepository<CourseUserModel, UUID> {
     boolean existsByCourseAndUserId(CourseModel course, @NotNull(message = "userId cannot be null") UUID uuid);
-
-    void deleteAllCourseUserByCourse_CourseId(UUID courseId);
-
     boolean existsByCourse_CourseId(UUID courseId);
+
+    List<CourseUserModel> findAllByUserId(UUID userId);
 }
