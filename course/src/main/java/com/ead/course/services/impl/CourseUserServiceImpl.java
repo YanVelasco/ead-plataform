@@ -54,10 +54,8 @@ public class CourseUserServiceImpl implements CourseUserService {
     }
 
     @Override
+    @Transactional
     public void deleteCourseUserByUserId(UUID userId) {
-        var courseUsers = courseUserRepository.findAllByUserId(userId);
-        if (!courseUsers.isEmpty()) {
-            courseUserRepository.deleteAll(courseUsers);
-        }
+        courseUserRepository.deleteAllByUserId(userId);
     }
 }
