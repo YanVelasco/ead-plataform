@@ -5,7 +5,7 @@ server:
 
 spring:
   application:
-    name: ead-authuser
+    name: ead-authuser-service
 
   datasource:
     url: jdbc:postgresql://localhost:5432/authuser_db
@@ -82,7 +82,7 @@ logging:
 ead:
   api:
     url:
-      course: http://localhost:8082/ead-course
+      course: http://ead-course-service/ead-course
 
 eureka:
     client:
