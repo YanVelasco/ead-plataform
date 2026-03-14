@@ -129,18 +129,18 @@ public class Specifications {
                                                Root<CourseModel> root,
                                                CriteriaQuery<?> query,
                                                CourseFilterDto filter) {
-        if (filter.userInstructor() == null) {
-            return;
-        }
-        if (query != null) {
-            query.distinct(true);
-        }
-        predicates.add(
-                criteriaBuilder.equal(
-                        root.join("coursesUsersModel").get("userId"),
-                        filter.userInstructor()
-                )
-        );
+//        if (filter.userInstructor() == null) {
+//            return;
+//        }
+//        if (query != null) {
+//            query.distinct(true);
+//        }
+//        predicates.add(
+//                criteriaBuilder.equal(
+//                        root.join("users").get("userId"),
+//                        filter.userInstructor()
+//                )
+//        );
     }
 
     private static boolean hasText(String value) {

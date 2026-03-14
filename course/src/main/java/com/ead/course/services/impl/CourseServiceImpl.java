@@ -1,13 +1,11 @@
 package com.ead.course.services.impl;
 
-import com.ead.course.clients.AuthUserClient;
 import com.ead.course.dtos.CourseDto;
 import com.ead.course.dtos.CourseFilterDto;
 import com.ead.course.exceptions.AlreadyExistsException;
 import com.ead.course.exceptions.NotFoundException;
 import com.ead.course.models.CourseModel;
 import com.ead.course.repositories.CourseRepository;
-import com.ead.course.repositories.CourseUserRepository;
 import com.ead.course.services.CourseService;
 import com.ead.course.specifications.Specifications;
 import lombok.extern.slf4j.Slf4j;
@@ -32,14 +30,10 @@ public class CourseServiceImpl implements CourseService {
 
     private final CourseRepository courseRepository;
     private final CourseService courseService;
-    private final CourseUserRepository courseUserRepository;
-    private final AuthUserClient authUserClient;
 
-    public CourseServiceImpl(CourseRepository courseRepository, @Lazy CourseService courseService, CourseUserRepository courseUserRepository, AuthUserClient authUserClient) {
+    public CourseServiceImpl(CourseRepository courseRepository, @Lazy CourseService courseService) {
         this.courseRepository = courseRepository;
         this.courseService = courseService;
-        this.courseUserRepository = courseUserRepository;
-        this.authUserClient = authUserClient;
     }
 
     @Override
@@ -51,10 +45,6 @@ public class CourseServiceImpl implements CourseService {
     public void delete(UUID courseId) {
         log.info("Deleting course - courseId: {}", courseId);
         courseService.getById(courseId);
-
-        if (courseUserRepository.existsByCourse_CourseId(courseId)){
-            authUserClient.deleteUserSubscriptionInAuthUser(courseId);
-        }
 
         courseRepository.deleteById(courseId);
         log.info("Course deleted successfully - courseId: {}", courseId);

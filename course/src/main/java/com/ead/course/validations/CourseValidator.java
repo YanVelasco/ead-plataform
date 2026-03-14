@@ -1,9 +1,6 @@
 package com.ead.course.validations;
 
-import com.ead.course.clients.AuthUserClient;
 import com.ead.course.dtos.CourseDto;
-import com.ead.course.dtos.UserDto;
-import com.ead.course.enums.UserType;
 import com.ead.course.services.CourseService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -19,13 +16,12 @@ import java.util.UUID;
 public class CourseValidator implements Validator {
 
     private final Validator validator;
-    private  final CourseService courseService;
-    private final AuthUserClient authUserClient;
+    private final CourseService courseService;
 
-    public CourseValidator(@Qualifier("defaultValidator") Validator validator, CourseService courseService, AuthUserClient authUserClient) {
+
+    public CourseValidator(@Qualifier("defaultValidator") Validator validator, CourseService courseService) {
         this.validator = validator;
         this.courseService = courseService;
-        this.authUserClient = authUserClient;
     }
 
     @Override
@@ -57,21 +53,21 @@ public class CourseValidator implements Validator {
     }
 
     private void validateUserInstructor(UUID instructorId, Errors errors) {
-        UserDto userInstructor = authUserClient.getUserById(instructorId);
-        log.info("User DTO Response: {}", userInstructor);
-        log.info("User instructor DTO details - userId: {}, username: {}, email: {}, fullName: {}, userStatus: {}, userType: {}, phoneNumber: {}",
-                userInstructor.userId(),
-                userInstructor.username(),
-                userInstructor.email(),
-                userInstructor.fullName(),
-                userInstructor.userStatus(),
-                userInstructor.userType(),
-                userInstructor.phoneNumber());
-
-        if (userInstructor.userType().equals(UserType.USER) || userInstructor.userType().equals(UserType.STUDENT)){
-            log.info("User instructor must be of type INSTRUCTOR - userId: {}, userType: {}", instructorId, userInstructor.userType());
-            errors.rejectValue("userInstructor", "invalidUserInstructor", "User instructor must be of type INSTRUCTOR");
-        }
+//        UserDto userInstructor = authUserClient.getUserById(instructorId);
+//        log.info("User DTO Response: {}", userInstructor);
+//        log.info("User instructor DTO details - userId: {}, username: {}, email: {}, fullName: {}, userStatus: {}, userType: {}, phoneNumber: {}",
+//                userInstructor.userId(),
+//                userInstructor.username(),
+//                userInstructor.email(),
+//                userInstructor.fullName(),
+//                userInstructor.userStatus(),
+//                userInstructor.userType(),
+//                userInstructor.phoneNumber());
+//
+//        if (userInstructor.userType().equals(UserType.USER) || userInstructor.userType().equals(UserType.STUDENT)){
+//            log.info("User instructor must be of type INSTRUCTOR - userId: {}, userType: {}", instructorId, userInstructor.userType());
+//            errors.rejectValue("userInstructor", "invalidUserInstructor", "User instructor must be of type INSTRUCTOR");
+//        }
     }
 
 }

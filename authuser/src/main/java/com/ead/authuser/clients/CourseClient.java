@@ -42,21 +42,4 @@ public class CourseClient {
         }
     }
 
-    public void deleteUserCourseInCourse(UUID userId) {
-
-        var url = baseUrlCourse + "/courses/users/" + userId;
-
-        log.info("Requesting delete courses for userId: {} - URL: {}", userId, url);
-
-        try {
-            restClient.delete()
-                    .uri(url)
-                    .retrieve()
-                    .toBodilessEntity();
-        } catch (Exception e) {
-            log.error("Error requesting delete courses for userId: {}", userId, e);
-            throw e;
-        }
-    }
-
 }

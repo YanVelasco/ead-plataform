@@ -3,14 +3,12 @@ package com.ead.authuser.specifications;
 import com.ead.authuser.dtos.UserFilterDto;
 import com.ead.authuser.model.UserModel;
 import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class UserSpecifications {
 
@@ -32,7 +30,6 @@ public class UserSpecifications {
             addLikePredicate(predicates, criteriaBuilder, root, "fullName", filter.fullName());
             addLikePredicate(predicates, criteriaBuilder, root, "email", filter.email());
             assert query != null;
-            addCoursePredicate(predicates, criteriaBuilder, query, root, filter.courseId());
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
@@ -69,25 +66,6 @@ public class UserSpecifications {
         }
 
         predicates.add(criteriaBuilder.equal(root.get(field), value));
-    }
-
-    private static void addCoursePredicate(
-            List<Predicate> predicates,
-            CriteriaBuilder criteriaBuilder,
-            CriteriaQuery<?> query,
-            Root<UserModel> root,
-            UUID courseId
-    ) {
-        if (courseId == null) {
-            return;
-        }
-        query.distinct(true);
-        predicates.add(
-                criteriaBuilder.equal(
-                        root.join("userCourseModels").get("courseId"),
-                        courseId
-                )
-        );
     }
 
 }

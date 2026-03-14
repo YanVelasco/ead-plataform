@@ -9,7 +9,6 @@ import com.ead.authuser.exceptions.AlreadyExistsException;
 import com.ead.authuser.exceptions.NotFoundException;
 import com.ead.authuser.exceptions.SamePasswordException;
 import com.ead.authuser.model.UserModel;
-import com.ead.authuser.repository.UserCourseRepository;
 import com.ead.authuser.repository.UserRepository;
 import com.ead.authuser.service.ImageService;
 import com.ead.authuser.service.UserService;
@@ -40,14 +39,12 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ImageService imageService;
     private final CacheManager cacheManager;
-    private final UserCourseRepository userCourseRepository;
     private final CourseClient courseClient;
 
-    public UserServiceImpl(UserRepository userRepository, ImageService imageService, CacheManager cacheManager, UserCourseRepository userCourseRepository, CourseClient courseClient) {
+    public UserServiceImpl(UserRepository userRepository, ImageService imageService, CacheManager cacheManager, CourseClient courseClient) {
         this.userRepository = userRepository;
         this.imageService = imageService;
         this.cacheManager = cacheManager;
-        this.userCourseRepository = userCourseRepository;
         this.courseClient = courseClient;
     }
 
@@ -76,18 +73,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteById(UUID userId) {
         log.info("Deleting user by id: {}", userId);
-
-        if (userCourseRepository.existsByUser_UserId(userId)) {
-            log.debug("User-course associations found for userId: {}, deleting associations", userId);
-            userCourseRepository.deleteAllUserCourseModelByUser_UserId(userId);
-            log.debug("User-course associations deleted for userId: {}", userId);
-
-
-            courseClient.deleteUserCourseInCourse(userId);
-            log.debug("Requested course service to delete user-course associations for userId: {}", userId);
-        }
-
-
         userRepository.deleteById(userId);
     }
 
