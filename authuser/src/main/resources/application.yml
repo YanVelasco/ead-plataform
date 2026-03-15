@@ -59,6 +59,9 @@ spring:
     redis:
       time-to-live: -1
 
+  rabbitmq:
+    addresses: amqps://rbgrymlb:rsiXspsEfEVJO93QFrgLPpb75XoYighu@jackal.rmq.cloudamqp.com/rbgrymlb
+
 
 logging:
   level:
